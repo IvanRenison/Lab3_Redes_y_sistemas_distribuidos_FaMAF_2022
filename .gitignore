@@ -1,0 +1,8 @@
+.vscode
+
+.metadata/
+results/
+
+out/
+simulations/
+.settings/
