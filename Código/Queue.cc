@@ -13,6 +13,8 @@ private:
     simtime_t serviceTime;
     cOutVector bufferSizeVector;
     cOutVector packetDropVector;
+    cStdDev bufferSizeStats;
+    int packetsDropped {0};
 public:
     Queue();
     virtual ~Queue();
@@ -34,16 +36,18 @@ Queue::~Queue() {
 
 void Queue::initialize() {
     buffer.setName("buffer");
-    //create new packet 
+    packetDropVector.setName("packet drop");
+    bufferSizeVector.setName("buffer size");
+    bufferSizeStats.setName("buffer stats");
     endServiceEvent = new cMessage("endService");
-//    pkt->setByteLength(par("packetByteSize"));
+    packetsDropped = 0;
 }
 
 void Queue::finish() {
+    recordScalar("Promedio de paquetes", bufferSizeStats.getMean());
 }
 
 void Queue::handleMessage(cMessage *msg) {
-
     // if msg is signaling an endServiceEvent
     if (msg == endServiceEvent) {
         // if packet in buffer, send next one
@@ -60,11 +64,13 @@ void Queue::handleMessage(cMessage *msg) {
         //drop the packet 
         delete msg;
         this->bubble("packet dropped");
-        packetDropVector.record(1);
+        packetsDropped++;
+        packetDropVector.record(packetsDropped);
     } else {
         //enqueue the packet 
-        buffer.insert(msg);
         bufferSizeVector.record(buffer.getLength());
+        bufferSizeStats.collect(buffer.getLength());
+        buffer.insert(msg);
         //if the server is idle
         if (!endServiceEvent->isScheduled()) {
             //start the service now 
