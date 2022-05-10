@@ -34,7 +34,7 @@ void Sink::initialize(){
     delayStats.setName("TotalDelay");
     delayVector.setName("Delay");
     packetsReceived = 0;
-    packetsReceivedVector.setName("PacketsReceived");
+    packetsReceivedVector.setName("Received packets");
 }
 
 void Sink::finish(){

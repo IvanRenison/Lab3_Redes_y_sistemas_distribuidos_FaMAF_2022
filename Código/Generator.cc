@@ -39,7 +39,7 @@ void Generator::initialize() {
     scheduleAt(par("generationInterval"), sendMsgEvent);
 
     packetsSent = 0;
-    packetsSentVector.setName("PacketsSent");
+    packetsSentVector.setName("Sent packets");
 }
 
 void Generator::finish() {
