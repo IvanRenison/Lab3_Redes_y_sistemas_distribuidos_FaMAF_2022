@@ -8,7 +8,10 @@ using namespace omnetpp;
 
 class Generator : public cSimpleModule {
 private:
+    // events
     cMessage *sendMsgEvent;
+
+    // stats
     cStdDev transmissionStats;
     int packetsSent;
     cOutVector packetsSentVector;
@@ -24,7 +27,6 @@ Define_Module(Generator);
 
 Generator::Generator() {
     sendMsgEvent = NULL;
-
 }
 
 Generator::~Generator() {

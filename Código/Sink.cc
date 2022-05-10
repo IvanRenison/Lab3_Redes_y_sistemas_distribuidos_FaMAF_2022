@@ -8,6 +8,7 @@ using namespace omnetpp;
 
 class Sink : public cSimpleModule {
 private:
+    // stats
     cStdDev delayStats;
     cOutVector delayVector;
     int packetsReceived;

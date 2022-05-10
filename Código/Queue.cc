@@ -8,13 +8,18 @@ using namespace omnetpp;
 
 class Queue: public cSimpleModule {
 private:
+    // data
     cQueue buffer;
-    cMessage *endServiceEvent;
     simtime_t serviceTime;
+
+    // events
+    cMessage *endServiceEvent;
+
+    // stats
     cOutVector bufferSizeVector;
-    cOutVector packetDropVector;
     cStdDev bufferSizeStats;
     int packetsDropped;
+    cOutVector packetDropVector;
 public:
     Queue();
     virtual ~Queue();
