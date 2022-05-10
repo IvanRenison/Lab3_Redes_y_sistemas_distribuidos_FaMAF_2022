@@ -14,7 +14,7 @@ private:
     cOutVector bufferSizeVector;
     cOutVector packetDropVector;
     cStdDev bufferSizeStats;
-    int packetsDropped {0};
+    int packetsDropped;
 public:
     Queue();
     virtual ~Queue();
