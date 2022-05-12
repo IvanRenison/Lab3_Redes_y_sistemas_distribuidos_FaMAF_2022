@@ -100,6 +100,10 @@ void Queue::enqueueMessage(cMessage *msg) {
 }
 
 void Queue::handleMessage(cMessage *msg) {
+    // Record stats
+    bufferSizeVector.record(buffer.getLength());
+    bufferSizeStats.collect(buffer.getLength());
+
     if (msg == endServiceEvent) {
         // If msg is signaling an endServiceEvent
         sendPacket();
