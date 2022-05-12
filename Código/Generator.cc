@@ -15,6 +15,9 @@ private:
     cStdDev transmissionStats;
     int packetsSent;
     cOutVector packetsSentVector;
+
+    // functions
+    void sendPacket();
 public:
     Generator();
     virtual ~Generator();
@@ -42,28 +45,34 @@ void Generator::initialize() {
     packetsSent = 0;
     packetsSentVector.setName("Sent packets");
 
-    // schedule the first event at random time
+    // Schedule the first event at random time
     scheduleAt(par("generationInterval"), sendMsgEvent);
 }
 
 void Generator::finish() {
 }
 
-void Generator::handleMessage(cMessage *msg) {
-
-    // create new packet
+/* Send a new packet */
+void Generator::sendPacket() {
+    // Create new packet
     cPacket *pkt = new cPacket("packet");
     pkt->setByteLength(par("packetByteSize"));
-    // send to the output
-    send(pkt, "out");
 
-    // update stats
+    // Send to the output
+    send(pkt, "out");
+}
+
+void Generator::handleMessage(cMessage *msg) {
+    // All calls are for sending a new packet
+    sendPacket();
+
+    // Update stats
     packetsSent++;
     packetsSentVector.record(packetsSent);
 
-    // compute the new departure time
+    // Compute the new departure time
     simtime_t departureTime = simTime() + par("generationInterval");
-    // schedule the new packet generation
+    // Schedule the new packet generation
     scheduleAt(departureTime, sendMsgEvent);
 }
 

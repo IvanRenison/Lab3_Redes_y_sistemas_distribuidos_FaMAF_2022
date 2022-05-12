@@ -19,6 +19,10 @@ private:
     cStdDev bufferSizeStats;
     int packetsDropped;
     cOutVector packetDropVector;
+
+    // functions
+    void sendPacket();
+    void enqueueMessage(cMessage *msg);
 public:
     Queue();
     virtual ~Queue();
@@ -55,36 +59,59 @@ void Queue::finish() {
     recordScalar("Promedio de paquetes", bufferSizeStats.getMean());
 }
 
-void Queue::handleMessage(cMessage *msg) {
-    // if msg is signaling an endServiceEvent
-    if (msg == endServiceEvent) {
-        // if packet in buffer, send next one
-        if (!buffer.isEmpty()) {
-            // dequeue packet
-            cPacket *pkt = (cPacket*) buffer.pop();
-            // send packet
-            send(pkt, "out");
-            // start new service
-            simtime_t serviceTime = pkt->getDuration();
-            scheduleAt(simTime() + serviceTime, endServiceEvent);
-        }
-    } else if (buffer.getLength() >= par("bufferSize").intValue()) {
-        //drop the packet 
+/* Send a packet from de queue */
+void Queue::sendPacket() {
+    // If there is a packet in buffer, send it
+    if (!buffer.isEmpty()) {
+        // Dequeue packet
+        cPacket *pkt = (cPacket*) buffer.pop();
+
+        // Send packet
+        send(pkt, "out");
+
+        // Start new service when the packet is sent
+        simtime_t serviceTime = pkt->getDuration();
+        scheduleAt(simTime() + serviceTime, endServiceEvent);
+    }
+}
+
+/* Enqueue message if there is space in the buffer */
+void Queue::enqueueMessage(cMessage *msg) {
+    if (buffer.getLength() >= par("bufferSize").intValue()) {
+        // Drop the packet 
         delete msg;
+
+        // Animate lost
         this->bubble("packet dropped");
+
+        // Update stats
         packetsDropped++;
         packetDropVector.record(packetsDropped);
-    } else {
-        //enqueue the packet 
-        bufferSizeVector.record(buffer.getLength());
-        bufferSizeStats.collect(buffer.getLength());
+    }
+    else {
+        // Enqueue the packet 
         buffer.insert(msg);
-        //if the server is idle
+        
         if (!endServiceEvent->isScheduled()) {
-            //start the service now 
+            // If there are no messages being send, send these one now
             scheduleAt(simTime() + 0, endServiceEvent);
         }
     }
+}
+
+void Queue::handleMessage(cMessage *msg) {
+    if (msg == endServiceEvent) {
+        // If msg is signaling an endServiceEvent
+        sendPacket();
+    }
+    else {
+        // If msg is a incoming massage
+        enqueueMessage(msg);
+    }
+
+    // Record stats
+    bufferSizeVector.record(buffer.getLength());
+    bufferSizeStats.collect(buffer.getLength());
 }
 
 #endif /* QUEUE */
