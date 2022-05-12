@@ -6,3 +6,9 @@ results/
 out/
 simulations/
 .settings/
+
+.cmdenv-log
+.project
+.qtenvrc
+General.anf
+lab3-kickstarter
