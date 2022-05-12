@@ -1,22 +1,24 @@
 #ifndef SINK
 #define SINK
 
-#include <string.h>
 #include <omnetpp.h>
+#include <string.h>
 
 using namespace omnetpp;
 
 class Sink : public cSimpleModule {
-private:
+  private:
     // stats
     cStdDev delayStats;
     cOutVector delayVector;
     int packetsReceived;
     cOutVector packetsReceivedVector;
-public:
+
+  public:
     Sink();
     virtual ~Sink();
-protected:
+
+  protected:
     virtual void initialize();
     virtual void finish();
     virtual void handleMessage(cMessage *msg);
@@ -30,7 +32,7 @@ Sink::Sink() {
 Sink::~Sink() {
 }
 
-void Sink::initialize(){
+void Sink::initialize() {
     // Initialite stats
     delayStats.setName("TotalDelay");
     delayVector.setName("Delay");
@@ -38,7 +40,7 @@ void Sink::initialize(){
     packetsReceivedVector.setName("Received packets");
 }
 
-void Sink::finish(){
+void Sink::finish() {
     // Record stats at the end of simulation
     recordScalar("Avg delay", delayStats.getMean());
     recordScalar("Number of packets", delayStats.getCount());

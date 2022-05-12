@@ -1,13 +1,13 @@
 #ifndef GENERATOR
 #define GENERATOR
 
-#include <string.h>
 #include <omnetpp.h>
+#include <string.h>
 
 using namespace omnetpp;
 
 class Generator : public cSimpleModule {
-private:
+  private:
     // events
     cMessage *sendMsgEvent;
 
@@ -18,10 +18,12 @@ private:
 
     // functions
     void sendPacket();
-public:
+
+  public:
     Generator();
     virtual ~Generator();
-protected:
+
+  protected:
     virtual void initialize();
     virtual void finish();
     virtual void handleMessage(cMessage *msg);

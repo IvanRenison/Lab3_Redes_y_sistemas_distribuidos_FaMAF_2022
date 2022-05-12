@@ -1,13 +1,13 @@
 #ifndef QUEUE
 #define QUEUE
 
-#include <string.h>
 #include <omnetpp.h>
+#include <string.h>
 
 using namespace omnetpp;
 
-class Queue: public cSimpleModule {
-private:
+class Queue : public cSimpleModule {
+  private:
     // data
     cQueue buffer;
 
@@ -23,10 +23,12 @@ private:
     // functions
     void sendPacket();
     void enqueueMessage(cMessage *msg);
-public:
+
+  public:
     Queue();
     virtual ~Queue();
-protected:
+
+  protected:
     virtual void initialize();
     virtual void finish();
     virtual void handleMessage(cMessage *msg);
@@ -64,7 +66,7 @@ void Queue::sendPacket() {
     // If there is a packet in buffer, send it
     if (!buffer.isEmpty()) {
         // Dequeue packet
-        cPacket *pkt = (cPacket*) buffer.pop();
+        cPacket *pkt = (cPacket *)buffer.pop();
 
         // Send packet
         send(pkt, "out");
@@ -78,7 +80,7 @@ void Queue::sendPacket() {
 /* Enqueue message if there is space in the buffer */
 void Queue::enqueueMessage(cMessage *msg) {
     if (buffer.getLength() >= par("bufferSize").intValue()) {
-        // Drop the packet 
+        // Drop the packet
         delete msg;
 
         // Animate lost
@@ -87,11 +89,10 @@ void Queue::enqueueMessage(cMessage *msg) {
         // Update stats
         packetsDropped++;
         packetDropVector.record(packetsDropped);
-    }
-    else {
-        // Enqueue the packet 
+    } else {
+        // Enqueue the packet
         buffer.insert(msg);
-        
+
         if (!endServiceEvent->isScheduled()) {
             // If there are no messages being send, send these one now
             scheduleAt(simTime() + 0, endServiceEvent);
@@ -107,8 +108,7 @@ void Queue::handleMessage(cMessage *msg) {
     if (msg == endServiceEvent) {
         // If msg is signaling an endServiceEvent
         sendPacket();
-    }
-    else {
+    } else {
         // If msg is a incoming massage
         enqueueMessage(msg);
     }
