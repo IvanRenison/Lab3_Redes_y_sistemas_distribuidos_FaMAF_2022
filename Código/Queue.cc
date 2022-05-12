@@ -10,7 +10,6 @@ class Queue: public cSimpleModule {
 private:
     // data
     cQueue buffer;
-    simtime_t serviceTime;
 
     // events
     cMessage *endServiceEvent;
@@ -41,11 +40,15 @@ Queue::~Queue() {
 
 void Queue::initialize() {
     buffer.setName("buffer");
-    packetDropVector.setName("packet drop");
+
+    // Initialite events
+    endServiceEvent = new cMessage("endService");
+
+    // Initialite stats
     bufferSizeVector.setName("buffer size");
     bufferSizeStats.setName("buffer stats");
-    endServiceEvent = new cMessage("endService");
     packetsDropped = 0;
+    packetDropVector.setName("packet drop");
 }
 
 void Queue::finish() {
@@ -62,7 +65,7 @@ void Queue::handleMessage(cMessage *msg) {
             // send packet
             send(pkt, "out");
             // start new service
-            serviceTime = pkt->getDuration();
+            simtime_t serviceTime = pkt->getDuration();
             scheduleAt(simTime() + serviceTime, endServiceEvent);
         }
     } else if (buffer.getLength() >= par("bufferSize").intValue()) {

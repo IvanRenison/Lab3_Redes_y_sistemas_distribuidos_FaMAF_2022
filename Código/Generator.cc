@@ -34,14 +34,16 @@ Generator::~Generator() {
 }
 
 void Generator::initialize() {
-    transmissionStats.setName("TotalTransmissions");
-    // create the send packet
+    // Initialite events
     sendMsgEvent = new cMessage("sendEvent");
-    // schedule the first event at random time
-    scheduleAt(par("generationInterval"), sendMsgEvent);
 
+    // Initialite stats
+    transmissionStats.setName("TotalTransmissions");
     packetsSent = 0;
     packetsSentVector.setName("Sent packets");
+
+    // schedule the first event at random time
+    scheduleAt(par("generationInterval"), sendMsgEvent);
 }
 
 void Generator::finish() {

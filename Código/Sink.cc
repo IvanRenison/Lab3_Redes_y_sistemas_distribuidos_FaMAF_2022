@@ -31,7 +31,7 @@ Sink::~Sink() {
 }
 
 void Sink::initialize(){
-    // stats and vector names
+    // Initialite stats
     delayStats.setName("TotalDelay");
     delayVector.setName("Delay");
     packetsReceived = 0;
@@ -44,7 +44,7 @@ void Sink::finish(){
     recordScalar("Number of packets", delayStats.getCount());
 }
 
-void Sink::handleMessage(cMessage * msg) {
+void Sink::handleMessage(cMessage *msg) {
     // compute queuing delay
     simtime_t delay = simTime() - msg->getCreationTime();
     // update stats
@@ -55,7 +55,7 @@ void Sink::handleMessage(cMessage * msg) {
     packetsReceivedVector.record(packetsReceived);
 
     // delete msg
-    delete(msg);
+    delete msg;
 }
 
 #endif /* SINK */
