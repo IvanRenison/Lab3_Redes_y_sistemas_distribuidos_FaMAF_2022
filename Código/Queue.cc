@@ -47,10 +47,10 @@ Queue::~Queue() {
 void Queue::initialize() {
     buffer.setName("buffer");
 
-    // Initialite events
+    // Initialize events
     endServiceEvent = new cMessage("endService");
 
-    // Initialite stats
+    // Initialize stats
     bufferSizeVector.setName("buffer size");
     bufferSizeStats.setName("buffer stats");
     packetsDropped = 0;
@@ -61,7 +61,7 @@ void Queue::finish() {
     recordScalar("Promedio de paquetes", bufferSizeStats.getMean());
 }
 
-/* Send a packet from de queue */
+/* Send a packet from the queue */
 void Queue::sendPacket() {
     // If there is a packet in buffer, send it
     if (!buffer.isEmpty()) {
@@ -83,7 +83,7 @@ void Queue::enqueueMessage(cMessage *msg) {
         // Drop the packet
         delete msg;
 
-        // Animate lost
+        // Animate loss
         this->bubble("packet dropped");
 
         // Update stats
@@ -94,7 +94,7 @@ void Queue::enqueueMessage(cMessage *msg) {
         buffer.insert(msg);
 
         if (!endServiceEvent->isScheduled()) {
-            // If there are no messages being send, send these one now
+            // If there are no messages being sent, send this one now
             scheduleAt(simTime() + 0, endServiceEvent);
         }
     }
