@@ -11,5 +11,8 @@ simulations/
 .project
 .qtenvrc
 General.anf
+
+Código/*_m.*
+
 Código/Código
-Código/*_m*
+*.exe
