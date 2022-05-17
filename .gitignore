@@ -11,4 +11,6 @@ simulations/
 .project
 .qtenvrc
 General.anf
-lab3-kickstarter
+
+Codigo/Codigo
+*.exe
