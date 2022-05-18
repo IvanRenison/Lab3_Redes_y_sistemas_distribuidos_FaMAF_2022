@@ -23,7 +23,7 @@ class TransportTx : public cSimpleModule {
     double lastCong;
 
     // scalars
-    double congScalar;
+    double contScalar;
 
     void sendPacket();
     void enqueueMessage(cMessage *msg);
@@ -58,7 +58,7 @@ void TransportTx::initialize() {
     lastCong = 0;
 
     // Initialize scalars
-    congScalar = 1;
+    contScalar = 1;
 
     // Initialize events
     endServiceEvent = new cMessage("endService");
@@ -79,7 +79,7 @@ void TransportTx::sendPacket() {
 
         // Start new service when the packet is sent
         simtime_t serviceTime = pkt->getDuration();
-        serviceTime *= congScalar;
+        serviceTime *= contScalar;
         scheduleAt(simTime() + serviceTime, endServiceEvent);
     }
 }
@@ -104,15 +104,15 @@ void TransportTx::enqueueMessage(cMessage *msg) {
 
 void TransportTx::handleCongestion() {
     if (simTime().dbl() - lastCong >= CONTROL_TIMEOUT) {
-        congScalar += 0.1;
+        contScalar += 0.1;
         lastCong = simTime().dbl();
     }
 
 }
 
 void TransportTx::controlSendRate() {
-    if (simTime().dbl() - lastCong >= CONTROL_REGAIN_TIME && congScalar > 1.0) {
-        congScalar -= 0.1;
+    if (simTime().dbl() - lastCong >= CONTROL_REGAIN_TIME && contScalar > 1.0) {
+        contScalar -= 0.1;
     }
 }
 
