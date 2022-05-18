@@ -10,7 +10,6 @@ simulations/
 .cmdenv-log
 .project
 .qtenvrc
-General.anf
 
 Codigo/Codigo
 *.exe
