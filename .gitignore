@@ -10,9 +10,10 @@ simulations/
 .cmdenv-log
 .project
 .qtenvrc
-General.anf
 
-Codigo/*_m.*
+FeedbackPkt_m.*
 
 Codigo/Codigo
 *.exe
+
+Resultados_parte*
