@@ -6,15 +6,13 @@ carpeta_código = "Codigo"
 
 generation_intervals = [0.1, 0.2, 0.3, 1]
 
-resultados_nuestros = "Resultados"
+def carpeta_resultados(nombre_simulación: str):
+    return f"Resultados_{nombre_simulación}"
 
-def carpeta_resultados(parte: int):
-    return f"{resultados_nuestros}_parte{parte}"
+def carpeta_resultados_genInter(genInter: float, nombre_simulación: str, sep = os.sep):
+    return f"{carpeta_resultados(nombre_simulación)}{sep}geneation={genInter}"
 
-def carpeta_resultados_genInter(genInter: float, parte: int, sep = os.sep):
-    return f"{carpeta_resultados(parte)}{sep}sim_geneation={genInter}"
-
-def correr_simulaciones(parte: int):
+def correr_simulaciones(nombre: str):
     """
         Corre las simulaciones, usa el argumento para el nombre de la carpeta de los resultados
     """
@@ -33,12 +31,16 @@ def correr_simulaciones(parte: int):
     if not os.path.exists(omnet_ini):
         raise Exception(f"No se encuentra '{omnet_ini}'")
 
-    # Si la carpeta ya existe eliminarla
-    if os.path.exists(carpeta_resultados(parte)):
-        shutil.rmtree(carpeta_resultados(parte))
-    os.mkdir(carpeta_resultados(parte))
+    # Si la carpeta ya existe eliminarla, para asegurar que no queden resultados viejos
+    if os.path.exists(carpeta_resultados(nombre)):
+        shutil.rmtree(carpeta_resultados(nombre))
 
+    # Crear la carpeta para resultados
+    os.mkdir(carpeta_resultados(nombre))
+
+    # Correr las simulaciones
     for j in generation_intervals:
+        # Poner en un archivo la configuración del generationInterval
         with open(extra_ini, "w") as f_extra_ini:
             f_extra_ini.write(f"Network.nodeTx.gen.generationInterval=exponential({j})")
 
@@ -47,38 +49,36 @@ def correr_simulaciones(parte: int):
         if x != 0:
             raise Exception(f"Error al ejecutar simulación '{ejecutable}'")
 
-        shutil.move(omnet_output, carpeta_resultados_genInter(j, parte))
+        # Mover los resultados a la carpeta correcta
+        shutil.move(omnet_output, carpeta_resultados_genInter(j, nombre))
 
     os.remove(extra_ini)
 
-def exportar_graficos(parte: int):
+def exportar_gráficos(nombre: str):
     """
         Crea los gráficos, usa el argumento para el nombre de la carpeta de los resultados
     """
     general_anf = "General.anf"
-    carpeta_gráficos = f"Gráficos_parte{parte}"
+    carpeta_gráficos = f"Gráficos_{nombre}"
 
     # Chequear que exista el archivo anf
     if not os.path.exists(general_anf):
         raise Exception(f"No se encuentra '{general_anf}'")
 
-    # Si la carpeta ya existe eliminarla
-    if os.path.exists(carpeta_gráficos):
-        shutil.rmtree(carpeta_gráficos)
-
-    # Crear la carpeta
-    os.mkdir(carpeta_gráficos)
+    # crear la carpeta si no existe
+    if not os.path.exists(carpeta_gráficos):
+        os.mkdir(carpeta_gráficos)
 
     with open(general_anf, "r") as f_general_anf:
         lineas = f_general_anf.readlines()
 
     # Verificar que las lineas que se van a modificar sean de adentro del input
-    assert lineas[2] == "    <inputs>\n" and lineas[5] == "    </inputs>\n"
+    assert lineas[2] == f"    <inputs>{os.linesep}" and lineas[5] == f"    </inputs>{os.linesep}"
 
     for j in generation_intervals:
         # modificar <input pattern="..."/> en general_anf
-        lineas[3] = f'        <input pattern="{carpeta_resultados_genInter(j, parte, sep="/")}/General-*.vec"/>\n'
-        lineas[4] = f'        <input pattern="{carpeta_resultados_genInter(j, parte, sep="/")}/General-*.sca"/>\n'
+        lineas[3] = f'        <input pattern="{carpeta_resultados_genInter(j, nombre, sep="/")}/General-*.vec"/>{os.linesep}'
+        lineas[4] = f'        <input pattern="{carpeta_resultados_genInter(j, nombre, sep="/")}/General-*.sca"/>{os.linesep}'
         with open(general_anf, "w") as f_general_anf:
             # Escribir las lineas
             f_general_anf.writelines(lineas)
@@ -90,19 +90,15 @@ def exportar_graficos(parte: int):
         # Mover los gráficos a la carpeta de gráficos
         svg_files = filter(lambda x: x.endswith(".svg"), os.listdir())
         for svg_file in svg_files:
-            shutil.move(svg_file, f"{carpeta_gráficos}{os.sep}SIM_gen={j}_{svg_file}")
+            shutil.move(svg_file, f"{carpeta_gráficos}{os.sep}{svg_file[:-4]}_generation={j}.svg")
 
 def main(args: list):
-    match args:
-        case ["parte1"]:
-            parte = 1
-        case ["parte2"]:
-            parte = 2
-        case _:
-            print("USO: python3 runTest.py [parte1, parte2]")
-            raise Exception("Argumentos inválidos")
-    correr_simulaciones(parte)
-    exportar_graficos(parte)
+    if len(args) != 1:
+        print("USO: python3 runTest.py NOMBRE_SIMULACION")
+        raise Exception("Argumentos inválidos")
+    nombre_simulación: str = args[0]
+    correr_simulaciones(nombre_simulación)
+    exportar_gráficos(nombre_simulación)
 
 if __name__ == "__main__":
     # Obtener argumentos
