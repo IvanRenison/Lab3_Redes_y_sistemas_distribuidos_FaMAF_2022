@@ -4,7 +4,7 @@ import sys
 
 carpeta_código = "Codigo"
 
-generation_intervals = [0.1, 0.2, 0.3]
+generation_intervals = [0.1, 0.2, 0.3, 1]
 
 resultados_nuestros = "Resultados"
 
