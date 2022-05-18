@@ -4,7 +4,12 @@
 #include <omnetpp.h>
 #include <string.h>
 
+#include "FeedbackPkt_m.h"
+
 using namespace omnetpp;
+
+const double CONTROL_TIMEOUT = 1.0;
+const double CONTROL_REGAIN_TIME = 10.0;
 
 class TransportTx : public cSimpleModule {
   private:
@@ -14,8 +19,17 @@ class TransportTx : public cSimpleModule {
     // events
     cMessage *endServiceEvent;
 
+    // temporizers
+    double lastCong;
+
+    // scalars
+    double congScalar;
+
     void sendPacket();
     void enqueueMessage(cMessage *msg);
+    void handleCongestion();
+    void handleFlow();
+    void controlSendRate();
 
   public:
     TransportTx();
@@ -40,6 +54,12 @@ TransportTx::~TransportTx() {
 void TransportTx::initialize() {
     buffer.setName("transmisor status buffer");
 
+    // Initialize timers
+    lastCong = 0;
+
+    // Initialize scalars
+    congScalar = 1;
+
     // Initialize events
     endServiceEvent = new cMessage("endService");
 }
@@ -59,6 +79,7 @@ void TransportTx::sendPacket() {
 
         // Start new service when the packet is sent
         simtime_t serviceTime = pkt->getDuration();
+        serviceTime *= congScalar;
         scheduleAt(simTime() + serviceTime, endServiceEvent);
     }
 }
@@ -81,12 +102,31 @@ void TransportTx::enqueueMessage(cMessage *msg) {
     }
 }
 
-void TransportTx::handleMessage(cMessage *msg) {
-    if (msg->getKind() == 2) {
-        // msg is a FeedbackPkt
-        // FeedbackPkt* feedbackPkt = (FeedbackPkt*)msg;
+void TransportTx::handleCongestion() {
+    if (simTime().dbl() - lastCong >= CONTROL_TIMEOUT) {
+        congScalar += 0.1;
+        lastCong = simTime().dbl();
+    }
 
-        // Do something with the feedback info
+}
+
+void TransportTx::controlSendRate() {
+    if (simTime().dbl() - lastCong >= CONTROL_REGAIN_TIME && congScalar > 1.0) {
+        congScalar -= 0.1;
+    }
+}
+
+void TransportTx::handleMessage(cMessage *msg) {
+    controlSendRate();
+
+    if (msg->getKind() == 2) {
+        //msg is a FeedbackPkt
+        FeedbackPkt* feedbackPkt = (FeedbackPkt*)msg;
+
+        if (feedbackPkt->getFullBufferQueue() || feedbackPkt->getFullBufferR()) {
+            handleCongestion();
+        }
+
         delete msg;
     } else if (msg->getKind() == 0) {
         // msg is a data packet

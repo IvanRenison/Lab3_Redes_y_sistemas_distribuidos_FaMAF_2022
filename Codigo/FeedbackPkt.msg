@@ -1,4 +1,5 @@
 packet FeedbackPkt
 {
-    int bufferSize = 0;
+    bool fullBufferQueue = false;
+    bool fullBufferR = false;
 }

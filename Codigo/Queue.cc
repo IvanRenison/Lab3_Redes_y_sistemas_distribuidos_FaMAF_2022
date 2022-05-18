@@ -4,6 +4,8 @@
 #include <omnetpp.h>
 #include <string.h>
 
+#include"FeedbackPkt_m.h"
+
 using namespace omnetpp;
 
 class Queue : public cSimpleModule {
@@ -79,7 +81,10 @@ void Queue::sendPacket() {
 
 /* Enqueue message if there is space in the buffer */
 void Queue::enqueueMessage(cMessage *msg) {
-    if (buffer.getLength() >= par("bufferSize").intValue()) {
+    const int bufferMaxSize = par("bufferSize").intValue();
+    const int umbral = 0.80 * bufferMaxSize;
+
+    if (buffer.getLength() >= bufferMaxSize) {
         // Drop the packet
         delete msg;
 
@@ -90,6 +95,12 @@ void Queue::enqueueMessage(cMessage *msg) {
         packetsDropped++;
         packetDropVector.record(packetsDropped);
     } else {
+        if (buffer.getLength() >= umbral) {
+                FeedbackPkt *fbkPkt = new FeedbackPkt();
+                fbkPkt->setKind(2);
+                fbkPkt->setFullBufferQueue(true);
+                buffer.insertBefore(buffer.front(), fbkPkt);
+        }
         // Enqueue the packet
         buffer.insert(msg);
 
