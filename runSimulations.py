@@ -4,12 +4,15 @@ import sys
 
 carpeta_código = "Codigo"
 
-generation_intervals = [0.1, 0.2, 0.3]
+generation_intervals = [0.1, 0.2, 0.3, 1]
 
 resultados_nuestros = "Resultados"
 
-def carpeta_resultados(genInter: float, parte: int, sep = os.sep):
-    return f"{resultados_nuestros}_parte{parte}{sep}sim_geneation={genInter}"
+def carpeta_resultados(parte: int):
+    return f"{resultados_nuestros}_parte{parte}"
+
+def carpeta_resultados_genInter(genInter: float, parte: int, sep = os.sep):
+    return f"{carpeta_resultados(parte)}{sep}sim_geneation={genInter}"
 
 def correr_simulaciones(parte: int):
     """
@@ -31,9 +34,9 @@ def correr_simulaciones(parte: int):
         raise Exception(f"No se encuentra '{omnet_ini}'")
 
     # Si la carpeta ya existe eliminarla
-    if os.path.exists(resultados_nuestros):
-        shutil.rmtree(resultados_nuestros)
-    os.mkdir(resultados_nuestros)
+    if os.path.exists(carpeta_resultados(parte)):
+        shutil.rmtree(carpeta_resultados(parte))
+    os.mkdir(carpeta_resultados(parte))
 
     for j in generation_intervals:
         with open(extra_ini, "w") as f_extra_ini:
@@ -44,7 +47,7 @@ def correr_simulaciones(parte: int):
         if x != 0:
             raise Exception(f"Error al ejecutar simulación '{ejecutable}'")
 
-        shutil.move(omnet_output, carpeta_resultados(j, parte))
+        shutil.move(omnet_output, carpeta_resultados_genInter(j, parte))
 
     os.remove(extra_ini)
 
@@ -74,8 +77,8 @@ def exportar_graficos(parte: int):
 
     for j in generation_intervals:
         # modificar <input pattern="..."/> en general_anf
-        lineas[3] = f'        <input pattern="{carpeta_resultados(j, parte, sep="/")}/General-*.vec"/>\n'
-        lineas[4] = f'        <input pattern="{carpeta_resultados(j, parte, sep="/")}/General-*.sca"/>\n'
+        lineas[3] = f'        <input pattern="{carpeta_resultados_genInter(j, parte, sep="/")}/General-*.vec"/>\n'
+        lineas[4] = f'        <input pattern="{carpeta_resultados_genInter(j, parte, sep="/")}/General-*.sca"/>\n'
         with open(general_anf, "w") as f_general_anf:
             # Escribir las lineas
             f_general_anf.writelines(lineas)
