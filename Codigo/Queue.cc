@@ -58,7 +58,7 @@ void Queue::initialize() {
 }
 
 void Queue::finish() {
-    recordScalar("Promedio de paquetes", bufferSizeStats.getMean());
+    recordScalar("Dropped packets", packetsDropped);
 }
 
 /* Send a packet from de queue */
