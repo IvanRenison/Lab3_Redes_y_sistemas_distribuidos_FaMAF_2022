@@ -18,7 +18,7 @@
 
     En este trabajo analizarnos una red muy simple que consta de un generador y un receptor conectados por una nodo intermedio que tiene un buffer. El esquema de esta red sería así:
 
-![Captura de pantalla de 2022-05-19 12-09-37.png](./Imágenes%20informe/Captura%20de%20pantalla%20de%202022-05-19%2012-09-37.png)
+![Captura de pantalla de 2022-05-19 12-09-37.png](./Imágenes%20informe/Esquema%20de%20la%20red.png)
 
     Aquí `nodeTx` es el generador y `nodeRx` es el receptor. Los canales que conectan a `nodeTx` con la cola y a la cola con `nodeRx` tienen una cantidad máxima de bits por segundo que se pueden mandar y un tiempo que se demora en llagar la información (que puede ser distinta en cada uno).
 
@@ -44,8 +44,6 @@
 
     Cuenta con un buffer para almacenar los paquetes cuando le llegan a mas velocidad de la que los puede mandar.
 
-
-
 ### Variables
 
     Con todo eso, queda una gran cantidad de variables en el sistema. A continuación una lista de las variables mas importante:
@@ -58,14 +56,26 @@
 
 - Capacidad de los buffers: La cantidad de paquetes que puede haber en los distintos buffers. Hay tres buffers en total, el que están en `nodeTx`, el de la cola del medio y el de `nodeRx`, sin embargo, el buffer de `nodeTx` lo vamos a hacer muy grande, mas que lo que va a tener y así solo son limitantes los otros dos buffers.
 
-    También hay algunas otras variables, como el tiempo de procesamiento de los paquetes, a los cuales no les vamos a dar mucha importancia.
+    También hay algunas otras variables, como el tiempo de procesamiento de los paquetes, a las cuales no les vamos a dar mucha importancia.
 
+### Experimentos
 
+    Para hacer algunos experimentos, primer fijamos algunas variables:
+
+    Al tamaño del buffer de `nodeTx` lo fijamos en un valor muy grande (200000 paquetes) para que nunca se llene.
+
+    Al tamaño del buffer de la cola del medio y al tamaño del buffer de `nodeRx` los fijamos en 200 paquetes.
+
+    A la capacidad del canal entre `nodeTx` y la cola del medio la fijamos en 10 paquetes por segundo (fijando la discapacidad de 1Mb/s y el tamaño del paquete en 12500B).
 
 
 
 ## Métodos
 
+
+
 ## Resultados
+
+
 
 ## Discusión
