@@ -1,4 +1,5 @@
 import json
+import matplotlib.pyplot as plt
 
 
 
@@ -41,6 +42,15 @@ def datos_gráfico_carga(datos_crudos: dict) -> list[(float, float)]:
         res.append((intervalo, paquetes_recibidos/paquetes_enviados))
     return res
 
+def generar_grafico(x: list(int), y: list(int)):
+    x = [item/200 for item in x] #Paquetes generados entre 200 (tiempo de simulación)
+    y = [item/200 for item in y] #Paquetes recibidos entre 200 (tiempo de simulación)
 
+    plt.plot(x, y)
+    plt.xlabel("Paquetes enviados")
+    plt.ylabel("Paquetes recibidos")
+    plt.grid()
+    plt.title("Grafico de carga útil")
+    plt.savefig("test.svg")
 
 
