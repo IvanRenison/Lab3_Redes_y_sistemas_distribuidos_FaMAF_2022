@@ -98,6 +98,7 @@ void Queue::enqueueMessage(cMessage *msg) {
         if (buffer.getLength() >= umbral) {
                 FeedbackPkt *fbkPkt = new FeedbackPkt();
                 fbkPkt->setKind(2);
+                fbkPkt->setByteLength(1);
                 fbkPkt->setFullBufferQueue(true);
                 buffer.insertBefore(buffer.front(), fbkPkt);
         }

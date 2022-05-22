@@ -12,9 +12,11 @@ class TransportRx : public cSimpleModule {
   private:
     // data
     cQueue buffer;
+    cQueue bufferFeedback;
 
     // events
     cMessage *endServiceEvent;
+    cMessage *feedbackEvent;
 
     // stats
     cOutVector bufferSizeVector;
@@ -24,6 +26,8 @@ class TransportRx : public cSimpleModule {
 
     // functions
     void sendPacket();
+    void sendFeedback();
+    void enqueueFeedback(cMessage *msg);
     void enqueueMessage(cMessage *msg);
   public:
     TransportRx();
@@ -47,8 +51,9 @@ TransportRx::~TransportRx() {
 
 void TransportRx::initialize() {
     buffer.setName("receptor status buffer");
-
+    bufferFeedback.setName("receptor feedback status buffer");
     // Initialize events
+    feedbackEvent = new cMessage("endFeedback");
     endServiceEvent = new cMessage("endService");
     // Initialize stats
     bufferSizeVector.setName("buffer size");
@@ -93,10 +98,11 @@ void TransportRx::enqueueMessage(cMessage *msg) {
         packetDropVector.record(packetsDropped);
     } else {
         if (buffer.getLength() >= umbral) {
-                FeedbackPkt *fbkPkt = new FeedbackPkt();
-                fbkPkt->setKind(2);
-                fbkPkt->setFullBufferR(true);
-                send(fbkPkt, "toOut$o");
+            FeedbackPkt *fbkPkt = new FeedbackPkt();
+            fbkPkt->setKind(2);
+            fbkPkt->setByteLength(1);
+            fbkPkt->setFullBufferR(true);
+            enqueueFeedback(fbkPkt);
         }
         // Enqueue the packet
         buffer.insert(msg);
@@ -108,22 +114,46 @@ void TransportRx::enqueueMessage(cMessage *msg) {
     }
 }
 
+void TransportRx::sendFeedback() {
+    if (!bufferFeedback.isEmpty()) {
+        // Dequeue packet
+        FeedbackPkt *pkt = (FeedbackPkt *)bufferFeedback.pop();
+
+        // Send packet
+        send(pkt, "toOut$o");
+        scheduleAt(simTime() + pkt->getDuration(), feedbackEvent);
+    }
+}
+
+void TransportRx::enqueueFeedback(cMessage *msg) {
+    // Enqueue the packet
+    bufferFeedback.insert(msg);
+
+    if (!feedbackEvent->isScheduled()) {
+        // If there are no messages being sent, send this one now
+        scheduleAt(simTime() + 0, feedbackEvent);
+    }
+}
+
 void TransportRx::handleMessage(cMessage *msg) {
     // Record stats
     bufferSizeVector.record(buffer.getLength());
     bufferSizeStats.collect(buffer.getLength());
 
     if (msg->getKind() == 2) {
-        send(msg, "toOut$o");
+        enqueueFeedback(msg);
     } else {
         if (msg == endServiceEvent) {
             // If msg is signaling an endServiceEvent
             sendPacket();
+        } else if (msg == feedbackEvent) {
+            sendFeedback();
         } else {
             // If msg is a incoming massage
             enqueueMessage(msg);
         }
     }
+
 
     // Record stats
     bufferSizeVector.record(buffer.getLength());

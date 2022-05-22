@@ -11,9 +11,12 @@ simulations/
 .project
 .qtenvrc
 
+__pycache__
+
 FeedbackPkt_m.*
 
 Codigo/Codigo
 *.exe
+*.json
 
 Resultados_parte*

@@ -8,8 +8,8 @@
 
 using namespace omnetpp;
 
-const double CONTROL_TIMEOUT = 1.0;
-const double CONTROL_REGAIN_TIME = 10.0;
+const double CONTROL_TIMEOUT = 0.5;
+const double CONTROL_REGAIN_TIME = 1.0;
 
 class TransportTx : public cSimpleModule {
   private:
