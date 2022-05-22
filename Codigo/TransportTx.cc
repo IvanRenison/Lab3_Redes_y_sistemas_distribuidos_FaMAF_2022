@@ -25,6 +25,10 @@ class TransportTx : public cSimpleModule {
     // scalars
     double contScalar;
 
+    // stats
+    cOutVector bufferSizeVector;
+
+    // functions
     void sendPacket();
     void enqueueMessage(cMessage *msg);
     void handleCongestion();
@@ -62,6 +66,9 @@ void TransportTx::initialize() {
 
     // Initialize events
     endServiceEvent = new cMessage("endService");
+
+    // Initialize stats
+    bufferSizeVector.setName("buffer size");
 }
 
 void TransportTx::finish() {
@@ -116,6 +123,9 @@ void TransportTx::controlSendRate() {
 }
 
 void TransportTx::handleMessage(cMessage *msg) {
+    // Record stats
+    bufferSizeVector.record(buffer.getLength());
+
     controlSendRate();
 
     if (msg->getKind() == 2) {
@@ -137,6 +147,9 @@ void TransportTx::handleMessage(cMessage *msg) {
             enqueueMessage(msg);
         }
     }
+
+    // Record stats
+    bufferSizeVector.record(buffer.getLength());
 }
 
 #endif /* TRANSPORT_TX */
