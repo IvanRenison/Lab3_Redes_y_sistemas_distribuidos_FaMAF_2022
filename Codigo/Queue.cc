@@ -4,7 +4,7 @@
 #include <omnetpp.h>
 #include <string.h>
 
-#include"FeedbackPkt_m.h"
+#include "FeedbackPkt_m.h"
 
 using namespace omnetpp;
 
@@ -96,11 +96,11 @@ void Queue::enqueueMessage(cMessage *msg) {
         packetDropVector.record(packetsDropped);
     } else {
         if (buffer.getLength() >= umbral) {
-                FeedbackPkt *fbkPkt = new FeedbackPkt();
-                fbkPkt->setKind(2);
-                fbkPkt->setByteLength(1);
-                fbkPkt->setFullBufferQueue(true);
-                buffer.insertBefore(buffer.front(), fbkPkt);
+            FeedbackPkt *fbkPkt = new FeedbackPkt();
+            fbkPkt->setKind(2);
+            fbkPkt->setByteLength(1);
+            fbkPkt->setFullBufferQueue(true);
+            buffer.insertBefore(buffer.front(), fbkPkt);
         }
         // Enqueue the packet
         buffer.insert(msg);

@@ -107,7 +107,6 @@ void TransportTx::handleCongestion() {
         contScalar += 0.1;
         lastCong = simTime().dbl();
     }
-
 }
 
 void TransportTx::controlSendRate() {
@@ -121,7 +120,7 @@ void TransportTx::handleMessage(cMessage *msg) {
 
     if (msg->getKind() == 2) {
         //msg is a FeedbackPkt
-        FeedbackPkt* feedbackPkt = (FeedbackPkt*)msg;
+        FeedbackPkt *feedbackPkt = (FeedbackPkt *)msg;
 
         if (feedbackPkt->getFullBufferQueue() || feedbackPkt->getFullBufferR()) {
             handleCongestion();
@@ -131,7 +130,7 @@ void TransportTx::handleMessage(cMessage *msg) {
     } else if (msg->getKind() == 0) {
         // msg is a data packet
         if (msg == endServiceEvent) {
-        // If msg is signaling an endServiceEvent
+            // If msg is signaling an endServiceEvent
             sendPacket();
         } else {
             // If msg is a incoming massage

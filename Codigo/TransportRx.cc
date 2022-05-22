@@ -29,6 +29,7 @@ class TransportRx : public cSimpleModule {
     void sendFeedback();
     void enqueueFeedback(cMessage *msg);
     void enqueueMessage(cMessage *msg);
+
   public:
     TransportRx();
     virtual ~TransportRx();
@@ -155,7 +156,6 @@ void TransportRx::handleMessage(cMessage *msg) {
             enqueueMessage(msg);
         }
     }
-
 
     // Record stats
     bufferSizeVector.record(buffer.getLength());
