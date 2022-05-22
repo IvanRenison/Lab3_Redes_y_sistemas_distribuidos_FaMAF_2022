@@ -43,10 +43,12 @@ Define_Module(TransportRx);
 
 TransportRx::TransportRx() {
     endServiceEvent = NULL;
+    feedbackEvent = NULL;
 }
 
 TransportRx::~TransportRx() {
     cancelAndDelete(endServiceEvent);
+    cancelAndDelete(feedbackEvent);
 }
 
 void TransportRx::initialize() {
