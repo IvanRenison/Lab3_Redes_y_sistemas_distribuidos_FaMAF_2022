@@ -104,7 +104,17 @@
 
     El motivo porque el cuál elegimos los valores 0.1, 0.2 y 0.3 es que en 0.1 la limitante principal ya es la salida del generador y al achicarlo mas se vuelve aun mas notorio eso y en 0.3 la red ya se llegan a enviar bien todos los paquetes y aumentarlo mas solo hace que esté mas sobrada la red.
 
-    
+    Esto se puede ver mejor en gráficos que comparen los paquetes enviados, recibidos y el intervalo de generación.
+
+    El siguiente gráfico copara la cantidad de paquetes enviados con respecto a la cantidad de paquetes recibidos por segundo (la cantidad de paquetes enviados aumenta cuando disminuye el intervalo de generación).
+
+![Gráfico de carga útil.svg](./Gráficos_parte1_caso1/Gráfico%20de%20carga%20útil.svg)
+
+    Y este gráfico es de la proporción de paquetes que llegan según el intervalo de generación.
+
+![Gráfico de intervalo de generación vs aprovechamiento.svg](./Gráficos_parte1_caso1/Gráfico%20de%20intervalo%20de%20generación%20vs%20aprovechamiento.svg)
+
+    En ambos gráficos se puede ver como aumentar o diminuir mas el intervalo de generación no pasa nada especial.
 
 ## Métodos
 
