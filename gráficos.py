@@ -1,4 +1,5 @@
 import json
+from typing import Tuple
 import matplotlib.pyplot as plt
 
 
@@ -31,7 +32,7 @@ def obtener_paquetes_enviadosYRecibidos(json_data: dict[str,]) -> dict[float, (i
     return res
 
 
-def datos_gráfico_carga(datos_crudos: dict) -> list[(float, float)]:
+def datos_gráfico_carga(datos_crudos: dict[float, (int, int)]) -> list[(float, float)]:
     """
         Devuelve una lista para hacer un gráfico con:
             Eje x = intervalo de generación
@@ -42,15 +43,21 @@ def datos_gráfico_carga(datos_crudos: dict) -> list[(float, float)]:
         res.append((intervalo, paquetes_recibidos/paquetes_enviados))
     return res
 
-def generar_grafico(x: list(int), y: list(int)):
-    x = [item/200 for item in x] #Paquetes generados entre 200 (tiempo de simulación)
-    y = [item/200 for item in y] #Paquetes recibidos entre 200 (tiempo de simulación)
+def datos_gráfico_enviadosVSrecibidos(datos_crudos: dict[float, (int, int)]) -> Tuple[list[int], list[int]]:
+    return map(lambda xy: xy[0], datos_crudos.values()), map(lambda xy: xy[1], datos_crudos.values())
 
-    plt.plot(x, y)
+def generar_gráfico_enviadosVSrecibidos(xs: list(int), ys: list(int)):
+    xs = [item/200 for item in xs] #Paquetes generados entre 200 (tiempo de simulación)
+    ys = [item/200 for item in ys] #Paquetes recibidos entre 200 (tiempo de simulación)
+
+    plt.plot(xs, ys)
     plt.xlabel("Paquetes enviados")
     plt.ylabel("Paquetes recibidos")
     plt.grid()
-    plt.title("Grafico de carga útil")
+    plt.title("Gráfico de carga útil")
     plt.savefig("test.svg")
+
+
+
 
 
