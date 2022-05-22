@@ -4,13 +4,17 @@ import sys
 
 carpeta_código = "Codigo"
 
-generation_intervals = [0.1, 0.2, 0.3, 1]
+# lista entre 0.1 y 1 cada 0.01
+generation_intervals = [0.1 + 0.01 * i for i in range(100)]
 
 def carpeta_resultados(nombre_simulación: str):
     return f"Resultados_{nombre_simulación}"
 
 def carpeta_resultados_genInter(genInter: float, nombre_simulación: str, sep = os.sep):
     return f"{carpeta_resultados(nombre_simulación)}{sep}geneation={genInter}"
+
+def carpeta_gráficos(nombre_simulación: str):
+    return f"Gráficos_{nombre_simulación}"
 
 def correr_simulaciones(nombre: str):
     """
@@ -59,15 +63,14 @@ def exportar_gráficos(nombre: str):
         Crea los gráficos, usa el argumento para el nombre de la carpeta de los resultados
     """
     general_anf = "General.anf"
-    carpeta_gráficos = f"Gráficos_{nombre}"
 
     # Chequear que exista el archivo anf
     if not os.path.exists(general_anf):
         raise Exception(f"No se encuentra '{general_anf}'")
 
     # crear la carpeta si no existe
-    if not os.path.exists(carpeta_gráficos):
-        os.mkdir(carpeta_gráficos)
+    if not os.path.exists(carpeta_gráficos(nombre)):
+        os.mkdir(carpeta_gráficos(nombre))
 
     with open(general_anf, "r") as f_general_anf:
         lineas = f_general_anf.readlines()
@@ -90,7 +93,21 @@ def exportar_gráficos(nombre: str):
         # Mover los gráficos a la carpeta de gráficos
         svg_files = filter(lambda x: x.endswith(".svg"), os.listdir())
         for svg_file in svg_files:
-            shutil.move(svg_file, f"{carpeta_gráficos}{os.sep}{svg_file[:-4]}_generation={j}.svg")
+            shutil.move(svg_file, f"{carpeta_gráficos(nombre)}{os.sep}{svg_file[:-4]}_generation={j}.svg")
+
+def gráficos_matplotlib(nombre_simulacion: str):
+    """
+        Crea los gráficos de `gráficos.py`
+    """
+    # Crear json
+    archivo_json = f"datos_{nombre_simulacion}.json"
+    x = os.system(f"opp_scavetool export {carpeta_resultados(nombre_simulacion)}{os.sep}*{os.sep}*.sca -o {archivo_json}")
+    assert x == 0
+
+    # Llamar a la función que hace los gráficos
+    import gráficos
+    gráficos.gráficos(archivo_json, nombre_simulacion)
+
 
 def main(args: list):
     if len(args) != 1:
@@ -99,6 +116,7 @@ def main(args: list):
     nombre_simulación: str = args[0]
     correr_simulaciones(nombre_simulación)
     exportar_gráficos(nombre_simulación)
+    gráficos_matplotlib(nombre_simulación)
 
 if __name__ == "__main__":
     # Obtener argumentos
