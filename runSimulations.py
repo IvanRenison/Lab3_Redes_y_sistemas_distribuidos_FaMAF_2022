@@ -4,8 +4,11 @@ import sys
 
 carpeta_código = "Codigo"
 
-# lista entre 0.1 y 1 cada 0.01
-generation_intervals = [0.1 + 0.01 * i for i in range(100)]
+# Todos los intervalos de generación con los que correr la simulación
+generation_intervals = [round(0.1 + 0.01 * i, ndigits=2) for i in range(91)]
+
+# Intervalos de generación para los cuales exportar gráficos detallados
+generation_intervals_gráficos_detallados = [0.1, 0.2, 0.3, 1.0]
 
 def carpeta_resultados(nombre_simulación: str):
     return f"Resultados_{nombre_simulación}"
@@ -78,7 +81,7 @@ def exportar_gráficos(nombre: str):
     # Verificar que las lineas que se van a modificar sean de adentro del input
     assert lineas[2] == f"    <inputs>{os.linesep}" and lineas[5] == f"    </inputs>{os.linesep}"
 
-    for j in generation_intervals:
+    for j in generation_intervals_gráficos_detallados:
         # modificar <input pattern="..."/> en general_anf
         lineas[3] = f'        <input pattern="{carpeta_resultados_genInter(j, nombre, sep="/")}/General-*.vec"/>{os.linesep}'
         lineas[4] = f'        <input pattern="{carpeta_resultados_genInter(j, nombre, sep="/")}/General-*.sca"/>{os.linesep}'
