@@ -66,6 +66,7 @@ void TransportRx::initialize() {
 }
 
 void TransportRx::finish() {
+    recordScalar("Dropped packets", packetsDropped);
 }
 
 /* Send a packet from the queue */

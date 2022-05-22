@@ -52,6 +52,7 @@ void Generator::initialize() {
 }
 
 void Generator::finish() {
+    recordScalar("Sent packets", packetsSent);
 }
 
 /* Send a new packet */
