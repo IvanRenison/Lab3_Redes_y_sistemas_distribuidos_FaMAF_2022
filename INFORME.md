@@ -160,7 +160,7 @@ Observando los gráficos de Carga enviada vs Carga útil, y de paquetes enviados
 
 Para dejar más claro la situación de los paquetes enviados/recibidos y los que quedan en los búffer veamos el siguiente gráfico con λ = 0.1 donde se pueden observar los paquetes enviados, perdidos, recibidos, y los que quedaron en el búffer del emisor.
 
-![Gráficos de distribución de paquetes.svg](./Gráficos_parte2/Received_sent_buffer_packets_generation=0.1.svg)
+![Gráficos de distribución de paquetes.svg](./Gráficos_parte2/Sent_vs_recived_packets_generation=0.1.svg)
 
 Se ve claramente que paquetes enviados ≈ paquetes recibidos + paquetes en búffer del emisor. Además se puede observar que NO hay paquetes desechados a diferencia de lo que sucedió en el análisis inicial (sin algoritmo de control de congestión/flujo).
 
