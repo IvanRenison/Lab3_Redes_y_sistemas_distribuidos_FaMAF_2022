@@ -18,7 +18,7 @@
 
     En este trabajo analizarnos una red muy simple que consta de un generador y un receptor conectados por un nodo intermedio que tiene un buffer. El esquema de esta red sería así:
 
-![Captura de pantalla de 2022-05-19 12-09-37.png](./Imágenes%20informe/Esquema%20de%20la%20red.png)
+![Captura de pantalla de 2022-05-19 12-09-37.png](./Imágenes%20informe/Esquema%20de%20la%20red%20parte%201.png)
 
     Aquí `nodeTx` es el generador y `nodeRx` es el receptor. Los canales que conectan a `nodeTx` con la cola y a la cola con `nodeRx` tienen una cantidad máxima de paquetes por segundo que se pueden mandar y un tiempo que se demora en llegar la información (que puede ser distinta en cada uno).
 
@@ -69,9 +69,9 @@
     Y a otros parámetros los hicimos variar:
 
 - Con las capacidad del canal entre la cola del medio y `nodeRx` y la velocidad de consumo hicimos dos casos:
-  
+
       En el primer caso, la capacidad del canal entre la cola del medio y `nodeRx` es 10 paquetes por segundo y la velocidad de consumo es 5 paquetes por segundo.
-  
+
       En el segundo caso, la capacidad del canal entre la cola del medio y `nodeRx` es 5 paquetes por segundo y la velocidad de consumo del receptor es 10 paquetes por segundo.
 
 - Al intervalo de generación le asignamos una distribución ε(λ) (exponencial de media λ) con λ variando entre 0 y 1.
@@ -118,6 +118,10 @@
 
 ## Métodos
 
+    Para comenzar con la solución del problema de los paquetes, se modificará el esquema de red, esta vez con un canal de comunicación exclusivo entre nodeTx y nodeRx, para que nodeRx le envíe mensajes de tipo "feedback" a nodeTx. El nuevo esquema tendrá la siguiente forma:
+
+![Captura de pantalla de 2022-05-19 12-09-37.png](./Imágenes%20informe/Esquema%20de%20la%20red%20parte%202.png)
+
     Se nos ocurrieron varias formas para solucionar la pérdida de paquetes por problemas de flujo (buffer del receptor lleno) y de congestión (buffer en la cola intermedia lleno). Algunas aproximaciones que se nos ocurrieron fueron:
 
 1. Que se envíe un paquete y se espera hasta que el receptor envíe una confirmación de que le llegó el paquete, es muy parecido al algoritmo de parada y espera. El problema principal que conlleva este método es que no se alcanza a aprovechar la capacidad de subida del canal.
@@ -125,6 +129,11 @@
 2. Luego, como una clase de evolución al primer método, que se envían paquetes continuamente hasta que algún buffer intermedio esté (casi) lleno, y que cuando esto suceda se envié una señal al emisor que haga que este pare de enviar paquetes hasta que el buffer se vacié.
 
 3. Luego, lo que terminamos implementando, es una mejora del segundo, haciendo que cuando un buffer está casi lleno (establecemos una variable "umbral" dependiente del nodo para determinar que significa que esté casi lleno) se envía una señal para que el lado del emisor disminuya la velocidad transmisión de paquetes (en lugar de pararla completamente).
+
+Con mas detalle, si se alcanza el umbral en el receptor, simplemente generará un mensaje de feedback y lo enviará por el canal exclusivo.
+Si se llena la queue intermedia, esta generará y enviará un mensaje de feedback por el canal normal de comunicación, nodeRx se enterará que dicho mensaje es para nodeTx y lo enviará por el canal exclusivo en lugar de enviarselo a la capa de aplicación.
+
+Notese que siguiendo la misma idea, este modelo se puede generalizar con una cantidad arbitraria de queues intermedias.
 
 ## Resultados
 
