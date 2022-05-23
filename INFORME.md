@@ -170,7 +170,24 @@
 
 ## Discusión
 
-En esta simulación se prueba un algoritmo de control de congestión/flujo sobre una red bastante básica, ya que a diferencia de una red real no suceden eventos como la caída de un enrutador o servidor, además que es una red sencilla con solo un enrutador de por medio, debido a esto el algoritmo es bastante simple.
+    En esta simulación todo está muy simplificado, ya que:
 
-En una red real habría que modificar el algoritmo para que reaccione correctamente ante eventos como caída de enrutadores, y optimizar mejor el tiempo que pasa antes de que el transmisor aumente/disminuya la transmisión de datos. Una limitación que tiene el algoritmo es que debido a que corregimos ambos problemas (congestión y flujo) con la misma solución se baja la transimisión del emisor al enrutador, cuando, por ejemplo, en el caso de un problema de flujo basta con disminuir la tasa de transferencia del enrutador al receptor y no hace falta cambiar la tasa del emisor al enrutador, esto se puede ver claramente en los resultados anteriores ya que con un intervalo de generación de 0.1 el delay va aumentando linealmente.
+- Se usa una red muy simple, en la que a diferencia de una red real hay muy pocos nodos, no suceden eventos como la caída de un enrutador o servidor y las velocidades de los enlaces y los nodos no cambian dinamicamente.
+
+- Se de dejan fijos muchos parámetros que se podrían modificar, como las velocidades de procesamiento, los tamaños de los buffers y la distribución de la generación de paquetes nuevos (se varia el parámetro λ en la distribución ε(λ), pero no se prueban otras distribuciones como la normal o la uniforme)
+
+- Se prueba un solo algoritmo, cuando en realidad hay muchas otras formas de solucionar le problema de control de flujo y congestión.
+
+    En otros trabajos se podría investigar que pasa al cambiar algunas de esas cosas.
+
+    En particular, para el algoritmo se podría:
+
+- Modificarlo para que reaccione correctamente ante eventos como caída de enrutadores y optimizar mejor el tiempo que pasa antes de que el transmisor aumente/disminuya la transmisión de datos.
+
+
+
+
+
+    Una limitación que tiene el algoritmo es que debido a que corregimos ambos problemas (congestión y flujo) con la misma solución se baja la transmisión del emisor al enrutador, cuando, por ejemplo, en el caso de un problema de flujo basta con disminuir la tasa de transferencia del enrutador al receptor y no hace falta cambiar la tasa del emisor al enrutador, esto se puede ver claramente en los resultados anteriores ya que con un intervalo de generación de 0.1 el delay va aumentando linealmente.
+
 
