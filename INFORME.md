@@ -71,9 +71,9 @@
     Y a otros parámetros los hicimos variar:
 
 - Con las capacidad del canal entre la cola del medio y `nodeRx` y la velocidad de consumo hicimos dos casos:
-
+  
       En el primer caso, la capacidad del canal entre la cola del medio y `nodeRx` es 1Mb/s y la velocidad de consumo del receptor es de 0.5Mb/s.
-
+  
       En el segundo caso, la capacidad del canal entre la cola del medio y `nodeRx` es 0.5Mb/s y la velocidad de consumo del receptor es de 1Mb/s.
 
 - Al intervalo de generación le asignamos una distribución ε(λ) (exponencial de media λ) con λ variando entre 0 y 1.
@@ -128,10 +128,9 @@
 
 3. Este último método, el que terminamos implementando, es una mejora del segundo, consiste en más o menos lo mismo, lo que cambia es la parte de cuando un buffer está casi lleno (establecemos una variable "umbral" dependiente del nodo para determinar que significa que esté casi lleno) se envía una señal (tanto desde la queue intermedia como desde el receptor) que en el lado del emisor retrasa la transmisión de paquetes (en lugar de pararla completamente).
 
-
 ## Resultados
 
-Para poder evaluar los resultados del algoritmo, al ser la misma solución tanto para un problema de congestión y un problema de flujo, modificamos los siguientes valores para que se pudieran observar ambos problemas en una sola simulación:
+    Para poder evaluar los resultados del algoritmo, al ser la misma solución tanto para un problema de congestión y un problema de flujo, modificamos los siguientes valores para que se pudieran observar ambos problemas en una sola simulación:
 
 - La tasa de transferencia desde el emisor al enrutador es de 1Mb/s.
 
@@ -139,31 +138,31 @@ Para poder evaluar los resultados del algoritmo, al ser la misma solución tanto
 
 - La velocidad de consumo del emisor (velocidad con que los paquetes pasan de la cola a la aplicación) es de 0.5Mb/s.
 
-De esta manera aseguramos que en algún momento se va a llenar el buffer de el router ya que la tasa de transmisión del emisor al mismo es más rapida que el procesamiento en el router, y también habra un problema de control de flujo ya que el emisor recibe paquetes más rápido de lo que los procesa.
+    De esta manera aseguramos que en algún momento se va a llenar el buffer de el router ya que la tasa de transmisión del emisor al mismo es más rapida que el procesamiento en el router, y también habra un problema de control de flujo ya que el emisor recibe paquetes más rápido de lo que los procesa.
 
-A continuación, el gráfico de paquetes en cada buffer para un intervalo de generación de paquetes de distribución ε(0.1):
+    A continuación, el gráfico de paquetes en cada buffer para un intervalo de generación de paquetes de distribución ε(0.1):
 
 ![Buffers_sizes_generation=0.1.svg](./Gráficos_parte2/Buffers_sizes_generation=0.1.svg)
 
-Se puede observar claramente en ambos casos que cada vez que la cola se acerca a su tamaño máximo y se envía el paquete de advertencia al emisor baja considerablemente la tasa de transmisión lo que causa que las colas logren descongestionarse. Además se puede ver que despues de cierto tiempo se va llenando la cola nuevamente, esto debido a que después de que pasa cierto tiempo sin recibir un paquete de advertencia el emisor aumenta la tasa de transferencia.
+    Se puede observar claramente en ambos casos que cada vez que la cola se acerca a su tamaño máximo y se envía el paquete de advertencia al emisor baja considerablemente la tasa de transmisión lo que causa que las colas logren descongestionarse. Además se puede ver que despues de cierto tiempo se va llenando la cola nuevamente, esto debido a que después de que pasa cierto tiempo sin recibir un paquete de advertencia el emisor aumenta la tasa de transferencia.
 
-Viendo el gráfico se puede ver que en los casos de congestión es bastante parecido a los algoritmos de control de congestión que maneja TCP, el motivo por el que lo hicimos de esta manera y porque baja tanto la tasa de transmisión es para asegurar que se baje lo suficiente como para prevenir la pérdida de paquetes.
+    Viendo el gráfico se puede ver que en los casos de congestión es bastante parecido a los algoritmos de control de congestión que maneja TCP, el motivo por el que lo hicimos de esta manera y porque baja tanto la tasa de transmisión es para asegurar que se baje lo suficiente como para prevenir la pérdida de paquetes.
 
-Otra cosa que se puede observar claramente además de la variación de la cantidad de paquetes en cola es la cantidad de paquetes que quedan en la cola del emisor, esto debido a que con un intervalo de generación de 0.1 los paquetes se generan muy rápido comparado a la tasa de transmisión del emisor al enrutador, y se va a ver reflejado más adelante en los gráficos de carga enviada vs carga recibida.
+    Otra cosa que se puede observar claramente además de la variación de la cantidad de paquetes en cola es la cantidad de paquetes que quedan en la cola del emisor, esto debido a que con un intervalo de generación de 0.1 los paquetes se generan muy rápido comparado a la tasa de transmisión del emisor al enrutador, y se va a ver reflejado más adelante en los gráficos de carga enviada vs carga recibida.
 
-A continuación podemos observar el gráfico de paquetes recibidos, enviados, y pérdidos a lo largo de la simulación, el estado de los búffers en cada simulación, y el delay para λ = 0.1, 0.2, 0.3:
+    A continuación podemos observar el gráfico de paquetes recibidos, enviados, y pérdidos a lo largo de la simulación, el estado de los búffers en cada simulación, y el delay para λ = 0.1, 0.2, 0.3:
 
-| λ = 0.1                                                                                                           | λ = 0.2                                                                                                           | λ = 0.3                                                                                                           |
-| ----------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| λ = 0.1                                                                                                     | λ = 0.2                                                                                                     | λ = 0.3                                                                                                     |
+| ----------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
 | ![Buffers_sizes_generation=0.1.svg](./Gráficos_parte2/Buffers_sizes_generation=0.1.svg)                     | ![Buffers_sizes_generation=0.2.svg](./Gráficos_parte2/Buffers_sizes_generation=0.2.svg)                     | ![Buffers_sizes_generation=0.3.svg](./Gráficos_parte2/Buffers_sizes_generation=0.3.svg)                     |
 | ![Sent_vs_recived_packets_generation=0.1.svg](./Gráficos_parte2/Sent_vs_recived_packets_generation=0.1.svg) | ![Sent_vs_recived_packets_generation=0.2.svg](./Gráficos_parte2/Sent_vs_recived_packets_generation=0.2.svg) | ![Sent_vs_recived_packets_generation=0.3.svg](./Gráficos_parte2/Sent_vs_recived_packets_generation=0.3.svg) |
 | ![Resived_packet_delay_generation=0.1.svg](./Gráficos_parte2/Resived_packet_delay_generation=0.1.svg)       | ![Resived_packet_delay_generation=0.2.svg](./Gráficos_parte2/Resived_packet_delay_generation=0.2.svg)       | ![Resived_packet_delay_generation=0.3.svg](./Gráficos_parte2/Resived_packet_delay_generation=0.3.svg)       |
 
-Podemos observar que cuando el intervalo es mayor o igual a 0.2 los gráficos son muy parecidos a los que vimos en el segmento anterior (sin algoritmo de control de congestión/flujo), esto debido a que para el intervalo de generación de paquetes las tasas de transmisión son lo suficientemente altas como para evitar congestiones o problemas de flujo.
+    Podemos observar que cuando el intervalo es mayor o igual a 0.2 los gráficos son muy parecidos a los que vimos en el segmento anterior (sin algoritmo de control de congestión/flujo), esto debido a que para el intervalo de generación de paquetes las tasas de transmisión son lo suficientemente altas como para evitar congestiones o problemas de flujo.
 
-El caso más interesante es cuando el intervalo es igual a 0.1, anteriormente vimos que en este caso la mayoría de paquetes quedan en la cola del emisor debido a la velocidad de la tasa de transferencia, y esto se puede ver en el gráfico de paquetes enviados vs recibidos, ya que parece que sólo se recibe la mitad de los paquetes que se envían, sin embargo esto no se debe a que se pierdan paquetes, ya que en el gráfico se puede ver que no hay paquetes perdidos, se debe a los paquetes que quedan en las colas (la gran mayoría en la cola del emsior). Otra cosa que se puede observar en este caso es como el delay va aumentando constantemente, esto debido a que constantemente se esta bajando la velocidad de transmisión de paquetes en el emisor para evitar la congestión en el enrutador del medio y en la cola del receptor.
+    El caso más interesante es cuando el intervalo es igual a 0.1, anteriormente vimos que en este caso la mayoría de paquetes quedan en la cola del emisor debido a la velocidad de la tasa de transferencia, y esto se puede ver en el gráfico de paquetes enviados vs recibidos, ya que parece que sólo se recibe la mitad de los paquetes que se envían, sin embargo esto no se debe a que se pierdan paquetes, ya que en el gráfico se puede ver que no hay paquetes perdidos, se debe a los paquetes que quedan en las colas (la gran mayoría en la cola del emsior). Otra cosa que se puede observar en este caso es como el delay va aumentando constantemente, esto debido a que constantemente se esta bajando la velocidad de transmisión de paquetes en el emisor para evitar la congestión en el enrutador del medio y en la cola del receptor.
 
-A continuación podemos observar los gráficos de carga enviada vs carga recibida y de paquetes enviados/recibidos por intervalo:
+    A continuación podemos observar los gráficos de carga enviada vs carga recibida y de paquetes enviados/recibidos por intervalo:
 
 ![Gráfico de carga útil.svg](./Gráficos_parte2/Gráfico%20de%20carga%20útil.svg)
 
