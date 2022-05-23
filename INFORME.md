@@ -96,7 +96,7 @@
 
     Los gráficos de los paquetes enviados recibidos y descartados y de retraso son también prácticamente iguales para ambos casos, así que a partir vamos a analizar un poco mas solo los gráficos del caso 1.
 
-    A continuación los gráficos de las tres cosas medidas para λ = 0.1, 0.2, 0.3:
+    A continuación los gráficos de las cosas medidas para λ = 0.1, 0.2, 0.3:
 
 | λ = 0.1                                                                                                           | λ = 0.2                                                                                                           | λ = 0.3                                                                                                           |
 | ----------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
@@ -120,13 +120,13 @@
 
 ## Métodos
 
-    Surgieron varias formas para solucionar la pérdida de paquetes por problemas de flujo (buffer del receptor lleno) y de congestión (buffer en la red intermedia lleno). Algunas aproximaciones que tuvimos en cuenta fueron:
+    Se nos ocurrieron varias formas para solucionar la pérdida de paquetes por problemas de flujo (buffer del receptor lleno) y de congestión (buffer en la cola intermedia lleno). Algunas aproximaciones que se nos ocurrieron fueron:
 
-1. Se envía un paquete y se espera hasta que el receptor envíe una confirmación de que le llegó el paquete, es muy parecido al algoritmo de parada y espera. El problema principal que conlleva este método es que no se alcanza a aprovechar la capacidad de subida del canal.
+1. Que se envíe un paquete y se espera hasta que el receptor envíe una confirmación de que le llegó el paquete, es muy parecido al algoritmo de parada y espera. El problema principal que conlleva este método es que no se alcanza a aprovechar la capacidad de subida del canal.
 
-2. Es una clase de evolución al primer método, esta vez se envían paquetes continuamente hasta que algún buffer intermedio esté (casi) lleno, cuando esto suceda se enviará una señal que hará que el emisor pare de enviar paquetes.
+2. Luego, como una clase de evolución al primer método, que se envían paquetes continuamente hasta que algún buffer intermedio esté (casi) lleno, y que cuando esto suceda se envié una señal al emisor que haga que este pare de enviar paquetes hasta que el buffer se vacié.
 
-3. Este último método, el que terminamos implementando, es una mejora del segundo, consiste en más o menos lo mismo, lo que cambia es la parte de cuando un buffer está casi lleno (establecemos una variable "umbral" dependiente del nodo para determinar que significa que esté casi lleno) se envía una señal (tanto desde la queue intermedia como desde el receptor) que en el lado del emisor retrasa la transmisión de paquetes (en lugar de pararla completamente).
+3. Luego, lo que terminamos implementando, es una mejora del segundo, haciendo que cuando un buffer está casi lleno (establecemos una variable "umbral" dependiente del nodo para determinar que significa que esté casi lleno) se envía una señal para que el lado del emisor disminuya la velocidad transmisión de paquetes (en lugar de pararla completamente).
 
 ## Resultados
 
@@ -168,6 +168,6 @@
 
 ![Gráfico de intervalo de generación vs aprovechamiento.svg](./Gráficos_parte2/Gráfico%20de%20intervalo%20de%20generación%20vs%20aprovechamiento.svg)
 
-Como comentamos anteriormente, a primera vista se puede ver que son muy parecidos a los gráficos obtenidos en el segmento anterior, donde no hay algoritmo de control de congestión/flujo, sin embargo en el análisis que hicimos anteriormente para el intervalo de 0.1 pudimos observar que cuando los paquetes se generan muy rápido, debido a la baja velocidad de transmisión la mayoría queda en la cola del emisor que es bastante grande, sin embargo no se pierden paquetes a lo largo de la red.
+    Como comentamos anteriormente, a primera vista se puede ver que son muy parecidos a los gráficos obtenidos en el segmento anterior, donde no hay algoritmo de control de congestión/flujo, sin embargo en el análisis que hicimos anteriormente para el intervalo de 0.1 pudimos observar que cuando los paquetes se generan muy rápido, debido a la baja velocidad de transmisión la mayoría queda en la cola del emisor que es bastante grande, sin embargo no se pierden paquetes a lo largo de la red.
 
 ## Discusión
