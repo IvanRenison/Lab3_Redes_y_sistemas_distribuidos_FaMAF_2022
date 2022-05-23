@@ -71,9 +71,9 @@
     Y a otros parámetros los hicimos variar:
 
 - Con las capacidad del canal entre la cola del medio y `nodeRx` y la velocidad de consumo hicimos dos casos:
-  
+
       En el primer caso, la capacidad del canal entre la cola del medio y `nodeRx` es 1Mb/s y la velocidad de consumo del receptor es de 0.5Mb/s.
-  
+
       En el segundo caso, la capacidad del canal entre la cola del medio y `nodeRx` es 0.5Mb/s y la velocidad de consumo del receptor es de 1Mb/s.
 
 - Al intervalo de generación le asignamos una distribución ε(λ) (exponencial de media λ) con λ variando entre 0 y 1.
@@ -119,6 +119,15 @@
     En ambos gráficos se puede ver como aumentar el intervalo de generación hace que la cantidad de paquetes enviados y recibidos sea casi igual, mientras que cuando se disminuye es mayor la diferencia.
 
 ## Métodos
+
+    Surgieron varias formas para solucionar la pérdida de paquetes por problemas de flujo (buffer del receptor lleno) y de congestión (buffer en la red intermedia lleno). Algunas aproximaciones que tuvimos en cuenta fueron:
+
+1. Se envía un paquete y se espera hasta que el receptor envíe una confirmación de que le llegó el paquete, es muy parecido al algoritmo de parada y espera. El problema principal que conlleva este método es que no se alcanza a aprovechar la capacidad de subida del canal.
+
+2. Es una clase de evolución al primer método, esta vez se envían paquetes continuamente hasta que algún buffer intermedio esté (casi) lleno, cuando esto suceda se enviará una señal que hará que el emisor pare de enviar paquetes.
+
+3. Este último método, el que terminamos implementando, es una mejora del segundo, consiste en más o menos lo mismo, lo que cambia es la parte de cuando un buffer está casi lleno (establecemos una variable "umbral" dependiente del nodo para determinar que significa que esté casi lleno) se envía una señal (tanto desde la queue intermedia como desde el receptor) que en el lado del emisor retrasa la transmisión de paquetes (en lugar de pararla completamente).
+
 
 ## Resultados
 
