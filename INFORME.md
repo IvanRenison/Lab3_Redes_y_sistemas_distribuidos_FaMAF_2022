@@ -171,3 +171,8 @@
     Como comentamos anteriormente, a primera vista se puede ver que son muy parecidos a los gráficos obtenidos en el segmento anterior, donde no hay algoritmo de control de congestión/flujo, sin embargo en el análisis que hicimos anteriormente para el intervalo de 0.1 pudimos observar que cuando los paquetes se generan muy rápido, debido a la baja velocidad de transmisión la mayoría queda en la cola del emisor que es bastante grande, sin embargo no se pierden paquetes a lo largo de la red.
 
 ## Discusión
+
+En esta simulación se prueba un algoritmo de control de congestión/flujo sobre una red bastante básica, ya que a diferencia de una red real no suceden eventos como la caída de un enrutador o servidor, además que es una red sencilla con solo un enrutador de por medio, debido a esto el algoritmo es bastante simple.
+
+En una red real habría que modificar el algoritmo para que reaccione correctamente ante eventos como caída de enrutadores, y optimizar mejor el tiempo que pasa antes de que el transmisor aumente/disminuya la transmisión de datos. Una limitación que tiene el algoritmo es que debido a que corregimos ambos problemas (congestión y flujo) con la misma solución se baja la transimisión del emisor al enrutador, cuando, por ejemplo, en el caso de un problema de flujo basta con disminuir la tasa de transferencia del enrutador al receptor y no hace falta cambiar la tasa del emisor al enrutador, esto se puede ver claramente en los resultados anteriores ya que con un intervalo de generación de 0.1 el delay va aumentando linealmente.
+
