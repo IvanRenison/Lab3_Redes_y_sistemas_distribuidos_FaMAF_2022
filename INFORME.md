@@ -136,9 +136,11 @@ A continuación, el gráfico de paquetes en cada buffer para un intervalo de gen
 
 ![Buffers_sizes_generation=0.1.svg](./Gráficos_parte2/Buffers_sizes_generation=0.1.svg)
 
-Se puede observar claramente en ambos casos que cada vez que el buffer se acerca a su tamaño máximo y se envía el paquete de advertencia al emisor baja considerablemente la tasa de transmisión lo que causa que los bufferes logren descongestionarse. Además se puede ver que despues de cierto tiempo se vuelve a llenar el buffer, esto debido a que después de que pasa cierto tiempo sin recibir un paquete de advertencia el emisor aumenta la tasa de transferencia.
+Se puede observar claramente en ambos casos que cada vez que la cola se acerca a su tamaño máximo y se envía el paquete de advertencia al emisor baja considerablemente la tasa de transmisión lo que causa que las colas logren descongestionarse. Además se puede ver que despues de cierto tiempo se va llenando la cola nuevamente, esto debido a que después de que pasa cierto tiempo sin recibir un paquete de advertencia el emisor aumenta la tasa de transferencia.
 
 Viendo el gráfico se puede ver que en los casos de congestión es bastante parecido a los algoritmos de control de congestión que maneja TCP, el motivo por el que lo hicimos de esta manera y porque baja tanto la tasa de transmisión es para asegurar que se baje lo suficiente como para prevenir la pérdida de paquetes.
+
+Otra cosa que se puede observar claramente además de la variación de la cantidad de paquetes en cola es la cantidad de paquetes que quedan en la cola del emisor, esto debido a que con un intervalo de generación de 0.1 los paquetes se generan muy rápido comparado a la tasa de transmisión del emisor al enrutador, y se va a ver reflejado más adelante en los gráficos de carga enviada vs carga recibida.
 
 A continuación podemos observar el gráfico de paquetes recibidos, enviados, y pérdidos a lo largo de la simulación, el estado de los búffers en cada simulación, y el delay para λ = 0.1, 0.2, 0.3:
 
@@ -148,20 +150,16 @@ A continuación podemos observar el gráfico de paquetes recibidos, enviados, y 
 | ![Sent_vs_recived_packets_generation=0.1.svg](./Gráficos_parte2/Sent_vs_recived_packets_generation=0.1.svg) | ![Sent_vs_recived_packets_generation=0.2.svg](./Gráficos_parte2/Sent_vs_recived_packets_generation=0.2.svg) | ![Sent_vs_recived_packets_generation=0.3.svg](./Gráficos_parte2/Sent_vs_recived_packets_generation=0.3.svg) |
 | ![Resived_packet_delay_generation=0.1.svg](./Gráficos_parte2/Resived_packet_delay_generation=0.1.svg)       | ![Resived_packet_delay_generation=0.2.svg](./Gráficos_parte2/Resived_packet_delay_generation=0.2.svg)       | ![Resived_packet_delay_generation=0.3.svg](./Gráficos_parte2/Resived_packet_delay_generation=0.3.svg)       |
 
-Podemos observar que cuando el intervalo es mayor o igual a 0.2 las colas se llenan y vacían casi automáticamente, por lo que varían entre 0 y 1 siempre, además podemos ver que en estos casos el delay es prácticamente constante, y bastante mejor comparado a los resultados obtenidos en el segmento anterior.
+Podemos observar que cuando el intervalo es mayor o igual a 0.2 los gráficos son muy parecidos a los que vimos en el segmento anterior (sin algoritmo de control de congestión/flujo), esto debido a que para el intervalo de generación de paquetes las tasas de transmisión son lo suficientemente altas como para evitar congestiones o problemas de flujo.
 
-Algo que también se puede ver es que en el caso en que λ = 0.1 el gráfico donde se muestran los paquetes enviados, recibidos y perdidos, es bastante parecido al gráfico que obtuvimos en la parte anterior en la que no hay un algoritmo de control de congestión/flujo, sin embargo difieren en que en este caso no hay paquetes perdidos, el único motivo por el que los gráficos son similares es porque con este intervalo de generación de paquetes hay una limitación en el generador, ya que la tasa de transferencia del generador al enrutador es de 1Mb/s esto quiere decir que muchos de los paquetes quedan en el búffer del generador, por ende en este último análisis obtuvimos mejores resultados a pesar de la similaridad de los gráficos.
+El caso más interesante es cuando el intervalo es igual a 0.1, anteriormente vimos que en este caso la mayoría de paquetes quedan en la cola del emisor debido a la velocidad de la tasa de transferencia, y esto se puede ver en el gráfico de paquetes enviados vs recibidos, ya que parece que sólo se recibe la mitad de los paquetes que se envían, sin embargo esto no se debe a que se pierdan paquetes, ya que en el gráfico se puede ver que no hay paquetes perdidos, se debe a los paquetes que quedan en las colas (la gran mayoría en la cola del emsior). Otra cosa que se puede observar en este caso es como el delay va aumentando constantemente, esto debido a que constantemente se esta bajando la velocidad de transmisión de paquetes en el emisor para evitar la congestión en el enrutador del medio y en la cola del receptor.
 
-Observando los gráficos de Carga enviada vs Carga útil, y de paquetes enviados/recibidos por intérvalo podemos ver lo mismo, son muy parecidos debido a la limitación del emisor, sin embargo ahora perdemos muchos menos paquetes que antes:
+A continuación podemos observar los gráficos de carga enviada vs carga recibida y de paquetes enviados/recibidos por intervalo:
 
 ![Gráfico de carga útil.svg](./Gráficos_parte2/Gráfico%20de%20carga%20útil.svg)
 
 ![Gráfico de intervalo de generación vs aprovechamiento.svg](./Gráficos_parte2/Gráfico%20de%20intervalo%20de%20generación%20vs%20aprovechamiento.svg)
 
-Para dejar más claro la situación de los paquetes enviados/recibidos y los que quedan en los búffer veamos el siguiente gráfico con λ = 0.1 donde se pueden observar los paquetes enviados, perdidos, recibidos, y los que quedaron en el búffer del emisor.
-
-![Gráficos de distribución de paquetes.svg](./Gráficos_parte2/Sent_vs_recived_packets_generation=0.1.svg)
-
-Se ve claramente que paquetes enviados ≈ paquetes recibidos + paquetes en búffer del emisor. Además se puede observar que NO hay paquetes desechados a diferencia de lo que sucedió en el análisis inicial (sin algoritmo de control de congestión/flujo).
+Como comentamos anteriormente, a primera vista se puede ver que son muy parecidos a los gráficos obtenidos en el segmento anterior, donde no hay algoritmo de control de congestión/flujo, sin embargo en el análisis que hicimos anteriormente para el intervalo de 0.1 pudimos observar que cuando los paquetes se generan muy rápido, debido a la baja velocidad de transmisión la mayoría queda en la cola del emisor que es bastante grande, sin embargo no se pierden paquetes a lo largo de la red.
 
 ## Discusión
