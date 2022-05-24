@@ -118,7 +118,7 @@
 
 ## Métodos
 
-    Para comenzar con la solución del problema de los paquetes, modificamos el esquema de red, esta vez con un canal de comunicación exclusivo entre nodeTx y nodeRx, para que nodeRx le envíe mensajes de tipo "feedback" a nodeTx. El nuevo esquema tendrá la siguiente forma:
+    Para comenzar con la solución del problema de los paquetes, modificamos el esquema de red, esta vez con un canal de comunicación exclusivo entre `nodeTx` y `nodeRx`, para que `nodeRx` le envíe mensajes de tipo "feedback" a `nodeTx`. El nuevo esquema tendrá la siguiente forma:
 
 ![Captura de pantalla de 2022-05-19 12-09-37.png](./Imágenes%20informe/Esquema%20de%20la%20red%20parte%202.png)
 
@@ -126,12 +126,12 @@
 
 1. Que se envíe un paquete y se espera hasta que el receptor envíe una confirmación de que le llegó el paquete, es muy parecido al algoritmo de parada y espera. El problema principal que conlleva este método es que no se alcanza a aprovechar la capacidad de subida del canal.
 
-2. Luego, como una clase de evolución al primer método, que se envían paquetes continuamente hasta que algún buffer intermedio esté "casi lleno", y que cuando esto suceda se envié una señal al emisor que haga que este pare de enviar paquetes hasta que el buffer se vacié.
+2. Luego, como una clase de evolución al primer método, que se envían paquetes continuamente hasta que algún buffer intermedio esté "casi lleno", y que cuando esto suceda se envié una señal al emisor que haga que este pare de enviar paquetes hasta que el buffer se vacíe.
 
 3. Luego, lo que terminamos implementando, es una mejora del segundo, haciendo que cuando un buffer está "casi lleno" se envía una señal para que el lado del emisor disminuya la velocidad transmisión de paquetes (en lugar de pararla completamente).
 
-    Con mas detalle, primero se establece un umbral de alrededor un 70~80% de la capacidad máxima del buffer, si se alcanza un umbral en el receptor, simplemente generará un mensaje de feedback y lo enviará por el canal exclusivo.
-Si se alcanza el umbral en la queue intermedia, esta generará y enviará un mensaje de feedback por el canal normal de comunicación, nodeRx se enterará que dicho mensaje es para nodeTx y lo enviará por el canal exclusivo en lugar de enviarselo a la capa de aplicación.
+    Con mas detalle, primero se establece un umbral de alrededor un 70~80% de la capacidad máxima del buffer, si se alcanza el umbral en el receptor, simplemente generará un mensaje de feedback y lo enviará por el canal exclusivo.
+Si se alcanza el umbral en la queue intermedia, esta generará y enviará un mensaje de feedback por el canal normal de comunicación, `nodeRx` se enterará que dicho mensaje es para `nodeTx` y lo enviará por el canal exclusivo en lugar de enviarselo a la capa de aplicación.
 
     Cuando llega el mensaje de feedback a nodeTx, este disminuirá su transmisión de paquetes encolandolos al rededor de un 10% mas tarde de lo que deberían ser encolados, después de T segundos la velocidad de transmisión volverá a lo normal.
 
@@ -169,7 +169,7 @@ Si se alcanza el umbral en la queue intermedia, esta generará y enviará un men
 
     Podemos observar que cuando el intervalo es mayor o igual a 0.2 los gráficos son muy parecidos a los que vimos en el segmento anterior (sin algoritmo de control de congestión/flujo), esto debido a que para el intervalo de generación de paquetes las tasas de transmisión son lo suficientemente altas como para evitar congestiones o problemas de flujo.
 
-    El caso más interesante es cuando el intervalo es igual a 0.1, anteriormente vimos que en este caso la mayoría de paquetes quedan en la cola del emisor debido a la velocidad de la tasa de transferencia y esto se puede ver en el gráfico de paquetes enviados vs recibidos, ya que parece que sólo se recibe la mitad de los paquetes que se envían, sin embargo esto no se debe a que se pierdan paquetes, ya que en el gráfico se puede ver que no hay paquetes perdidos, si no que se debe a los paquetes que quedan en las colas (la gran mayoría en la cola del emisor). Otra cosa que se puede observar en este caso es como el retardo va aumentando constantemente, esto porque cada vez los paquetes tienen que pasaron por una cola mas larga antes de ser embiados.
+    El caso más interesante es cuando el intervalo es igual a 0.1, anteriormente vimos que en este caso la mayoría de paquetes quedan en la cola del emisor debido a la velocidad de la tasa de transferencia y esto se puede ver en el gráfico de paquetes enviados vs recibidos, ya que parece que sólo se recibe la mitad de los paquetes que se envían, sin embargo esto no se debe a que se pierdan paquetes, ya que en el gráfico se puede ver que no hay paquetes perdidos, si no que se debe a los paquetes que quedan en las colas (la gran mayoría en la cola del emisor). Otra cosa que se puede observar en este caso es como el retardo va aumentando constantemente, esto porque cada vez los paquetes tienen que pasaron por una cola mas larga antes de ser enviados.
 
     A continuación podemos observar los gráficos de carga enviada vs carga recibida y de paquetes enviados/recibidos por intervalo:
 
@@ -178,6 +178,34 @@ Si se alcanza el umbral en la queue intermedia, esta generará y enviará un men
 ![Gráfico de intervalo de generación vs aprovechamiento.svg](./Gráficos_parte2/Gráfico%20de%20intervalo%20de%20generación%20vs%20aprovechamiento.svg)
 
     Como comentamos anteriormente, a primera vista se puede ver que son muy parecidos a los gráficos obtenidos en el segmento anterior, donde no hay algoritmo de control de congestión/flujo, sin embargo en el análisis que hicimos anteriormente para el intervalo de 0.1 pudimos observar que cuando los paquetes se generan muy rápido, debido a la baja velocidad de transmisión la mayoría queda en la cola del emisor que es bastante grande, sin embargo no se pierden paquetes a lo largo de la red.
+
+## Implmentación
+
+    Primero creamos un nuevo tipo de paquete `FeedbackPkt` para la transmisión de mensajes de control al emisor.
+Como se puede ver en el esquema en [Métodos](#métodos), se agregó una nueva cola al Network con el fin de permitir una comunicación directa entre `nodeRx` y `nodeTx`. Hablando de `nodeTx` y `nodeRx`, estos tambien los cambiamos, agregando nuevos submódulos `TransportTx` y `TransportRx` para que ambos nodos tengan forma de estar conectados por ambas colas.
+
+    En el lado de C++, se crearon nuevas clases para `TransportTx`, `TransportRx` y `FeedbackPkt`, también se modificó el módulo de `Queue` para que también pueda manejar mensajes de control.
+
+### `Queue.cc`
+
+    Establecemos una variable de umbral equivalente al 80% de la capacidad máxima de su buffer, si dicho buffer alcanza (o supera) el umbral, creará un mensaje de control para avisar sobre problemas de congestión.
+
+### `TransportRx.cc`
+
+    Su funcionamiento es escencialmente como el de `Queue.cc`, la diferencia es en el manejo de paquetes, inicialmente todos los paquetes se envían a la capa de aplicación, pero si se reciben mensajes de control entonces estos deben haber sido enviados por la cola `queue0` para señalizar posibles problemas de congestión, este paquete entonces será enviado por medio de `queue1` directo a `TransportRx`.
+
+    También establecemos una variable umbral que es un 70% de la capacidad máxima de su buffer, la razón por la que elegimos un valor menor que la de `queue0` es porque pueden ya haber muchos paquetes en la red, esto dará mas espacio a `TransportRx` para poder manejar dichos paquetes.
+Cuando se alcanza su umbral, este creará un mensaje de control y lo enviará por `queue1` avisando que habrán problemas de flujo.
+
+### `TransportTx.cc`
+
+    Tiene una funcionalidad similar a la de `Queue.cc`, así se saltearan los detalles básicos, lo interesante viene en como maneja el control de flujo y congestión.
+
+    Se establecen 2 constantes `CONTROL_TIMEOUT` y `CONTROL_REGAIN_TIME` (con valores de 0.5 y 1.0 segundos en la implementación, respectivamente).
+`CONTROL_TIMEOUT` es el un cooldown que ignora mensajes de control, ya que, como los nodos de la red seguro tienen muchos paquetes a ser procesados, una vez se alcanza el umbral, seguirá procesando y enviando mas mensajes de control. `CONTROL_REGAIN_TIME` es otro temporizador cuyo fin es el de "retomar" el tiempo de transmisión de paquetes.
+
+    Pero ¿A qué nos referimos con retomar? `TransportTx` guarda un escalar `contScalar` que establece que tan tarde se enviará un paquete, inicialmente su valor es 1.0, que en efecto hará que dicho paquete se encole en el tiempo que tardará en transmitirse, pero cuando hay un mensaje de control el escalar aumentará un 0.1%, es decir, se encolará un 10% mas tarde.
+Esto continuará si se reciben mas mensajes de control, pero eventualmente los buffer de las colas tienen oportunidad de liberarse, así que para aprovechar mejor la capacidad de la red luego de un tiempo (definido por `CONTROL_REGAIN_TIME`) se disminuirá el tiempo de encolación un 10% (hasta que este sea el valor "normal" de 1.0, no se deberían encolar paquetes en menos tiempo del que tardan en transmitirse).
 
 ## Discusión
 
