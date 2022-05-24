@@ -9,9 +9,8 @@ using namespace omnetpp;
 class Sink : public cSimpleModule {
   private:
     // stats
-    cStdDev delayStats;
-    cOutVector delayVector;
     int packetsReceived;
+    cOutVector delayVector;
     cOutVector packetsReceivedVector;
 
   public:
@@ -34,7 +33,6 @@ Sink::~Sink() {
 
 void Sink::initialize() {
     // Initialite stats
-    delayStats.setName("TotalDelay");
     delayVector.setName("Delay");
     packetsReceived = 0;
     packetsReceivedVector.setName("Received packets");
@@ -50,7 +48,6 @@ void Sink::handleMessage(cMessage *msg) {
     simtime_t delay = simTime() - msg->getCreationTime();
 
     // Update stats
-    delayStats.collect(delay);
     delayVector.record(delay);
     packetsReceived++;
     packetsReceivedVector.record(packetsReceived);

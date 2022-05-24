@@ -12,7 +12,6 @@ class Generator : public cSimpleModule {
     cMessage *sendMsgEvent;
 
     // stats
-    cStdDev transmissionStats;
     int packetsSent;
     cOutVector packetsSentVector;
 
@@ -43,7 +42,6 @@ void Generator::initialize() {
     sendMsgEvent = new cMessage("sendEvent");
 
     // Initialite stats
-    transmissionStats.setName("TotalTransmissions");
     packetsSent = 0;
     packetsSentVector.setName("Sent packets");
 

@@ -19,9 +19,8 @@ class TransportRx : public cSimpleModule {
     cMessage *feedbackEvent;
 
     // stats
-    cOutVector bufferSizeVector;
-    cStdDev bufferSizeStats;
     int packetsDropped;
+    cOutVector bufferSizeVector;
     cOutVector packetDropVector;
 
     // functions
@@ -59,9 +58,8 @@ void TransportRx::initialize() {
     feedbackEvent = new cMessage("endFeedback");
     endServiceEvent = new cMessage("endService");
     // Initialize stats
-    bufferSizeVector.setName("buffer size");
-    bufferSizeStats.setName("buffer stats");
     packetsDropped = 0;
+    bufferSizeVector.setName("buffer size");
     packetDropVector.setName("packet drop");
 }
 
@@ -142,7 +140,6 @@ void TransportRx::enqueueFeedback(cMessage *msg) {
 void TransportRx::handleMessage(cMessage *msg) {
     // Record stats
     bufferSizeVector.record(buffer.getLength());
-    bufferSizeStats.collect(buffer.getLength());
 
     if (msg->getKind() == 2) {
         enqueueFeedback(msg);
@@ -158,9 +155,6 @@ void TransportRx::handleMessage(cMessage *msg) {
         }
     }
 
-    // Record stats
-    bufferSizeVector.record(buffer.getLength());
-    bufferSizeStats.collect(buffer.getLength());
 }
 
 #endif /* TRANSPORT_RX */

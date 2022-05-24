@@ -17,9 +17,8 @@ class Queue : public cSimpleModule {
     cMessage *endServiceEvent;
 
     // stats
-    cOutVector bufferSizeVector;
-    cStdDev bufferSizeStats;
     int packetsDropped;
+    cOutVector bufferSizeVector;
     cOutVector packetDropVector;
 
     // functions
@@ -53,9 +52,8 @@ void Queue::initialize() {
     endServiceEvent = new cMessage("endService");
 
     // Initialize stats
-    bufferSizeVector.setName("buffer size");
-    bufferSizeStats.setName("buffer stats");
     packetsDropped = 0;
+    bufferSizeVector.setName("buffer size");
     packetDropVector.setName("packet drop");
 }
 
@@ -115,7 +113,6 @@ void Queue::enqueueMessage(cMessage *msg) {
 void Queue::handleMessage(cMessage *msg) {
     // Record stats
     bufferSizeVector.record(buffer.getLength());
-    bufferSizeStats.collect(buffer.getLength());
 
     if (msg == endServiceEvent) {
         // If msg is signaling an endServiceEvent
@@ -125,9 +122,6 @@ void Queue::handleMessage(cMessage *msg) {
         enqueueMessage(msg);
     }
 
-    // Record stats
-    bufferSizeVector.record(buffer.getLength());
-    bufferSizeStats.collect(buffer.getLength());
 }
 
 #endif /* QUEUE */

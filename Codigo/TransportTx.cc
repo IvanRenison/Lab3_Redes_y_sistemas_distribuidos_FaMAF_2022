@@ -8,8 +8,8 @@
 
 using namespace omnetpp;
 
-const double CONTROL_TIMEOUT = 0.5;
-const double CONTROL_REGAIN_TIME = 1.0;
+const double CONTROL_TIMEOUT = 0.1;
+const double CONTROL_REGAIN_TIME = 0.2;
 
 class TransportTx : public cSimpleModule {
   private:
@@ -62,7 +62,7 @@ void TransportTx::initialize() {
     lastCong = 0;
 
     // Initialize scalars
-    contScalar = 1;
+    contScalar = 0.0;
 
     // Initialize events
     endServiceEvent = new cMessage("endService");
@@ -86,7 +86,7 @@ void TransportTx::sendPacket() {
 
         // Start new service when the packet is sent
         simtime_t serviceTime = pkt->getDuration();
-        serviceTime *= contScalar;
+        serviceTime = (serviceTime + (serviceTime * contScalar));
         scheduleAt(simTime() + serviceTime, endServiceEvent);
     }
 }
@@ -117,7 +117,7 @@ void TransportTx::handleCongestion() {
 }
 
 void TransportTx::controlSendRate() {
-    if (simTime().dbl() - lastCong >= CONTROL_REGAIN_TIME && contScalar > 1.0) {
+    if (simTime().dbl() - lastCong >= CONTROL_REGAIN_TIME && contScalar > 0.1) {
         contScalar -= 0.1;
     }
 }
@@ -137,7 +137,7 @@ void TransportTx::handleMessage(cMessage *msg) {
         }
 
         delete msg;
-    } else if (msg->getKind() == 0) {
+    } else {
         // msg is a data packet
         if (msg == endServiceEvent) {
             // If msg is signaling an endServiceEvent
@@ -148,8 +148,6 @@ void TransportTx::handleMessage(cMessage *msg) {
         }
     }
 
-    // Record stats
-    bufferSizeVector.record(buffer.getLength());
 }
 
 #endif /* TRANSPORT_TX */
