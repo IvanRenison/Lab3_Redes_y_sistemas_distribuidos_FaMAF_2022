@@ -101,6 +101,7 @@ network Network
         nodeTx: NodeTx {
             @display("p=30,30");
         }
+
         queue0: Queue {
             @display("p=130,30");
         }
