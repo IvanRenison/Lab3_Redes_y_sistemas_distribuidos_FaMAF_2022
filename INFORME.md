@@ -118,7 +118,7 @@
 
 ## Métodos
 
-    Para comenzar con la solución del problema de los paquetes, se modificará el esquema de red, esta vez con un canal de comunicación exclusivo entre nodeTx y nodeRx, para que nodeRx le envíe mensajes de tipo "feedback" a nodeTx. El nuevo esquema tendrá la siguiente forma:
+    Para comenzar con la solución del problema de los paquetes, modificamos el esquema de red, esta vez con un canal de comunicación exclusivo entre nodeTx y nodeRx, para que nodeRx le envíe mensajes de tipo "feedback" a nodeTx. El nuevo esquema tendrá la siguiente forma:
 
 ![Captura de pantalla de 2022-05-19 12-09-37.png](./Imágenes%20informe/Esquema%20de%20la%20red%20parte%202.png)
 
@@ -126,14 +126,16 @@
 
 1. Que se envíe un paquete y se espera hasta que el receptor envíe una confirmación de que le llegó el paquete, es muy parecido al algoritmo de parada y espera. El problema principal que conlleva este método es que no se alcanza a aprovechar la capacidad de subida del canal.
 
-2. Luego, como una clase de evolución al primer método, que se envían paquetes continuamente hasta que algún buffer intermedio esté (casi) lleno, y que cuando esto suceda se envié una señal al emisor que haga que este pare de enviar paquetes hasta que el buffer se vacié.
+2. Luego, como una clase de evolución al primer método, que se envían paquetes continuamente hasta que algún buffer intermedio esté "casi lleno", y que cuando esto suceda se envié una señal al emisor que haga que este pare de enviar paquetes hasta que el buffer se vacié.
 
-3. Luego, lo que terminamos implementando, es una mejora del segundo, haciendo que cuando un buffer está casi lleno (establecemos una variable "umbral" dependiente del nodo para determinar que significa que esté casi lleno) se envía una señal para que el lado del emisor disminuya la velocidad transmisión de paquetes (en lugar de pararla completamente).
+3. Luego, lo que terminamos implementando, es una mejora del segundo, haciendo que cuando un buffer está "casi lleno" se envía una señal para que el lado del emisor disminuya la velocidad transmisión de paquetes (en lugar de pararla completamente).
 
-Con mas detalle, si se alcanza el umbral en el receptor, simplemente generará un mensaje de feedback y lo enviará por el canal exclusivo.
-Si se llena la queue intermedia, esta generará y enviará un mensaje de feedback por el canal normal de comunicación, nodeRx se enterará que dicho mensaje es para nodeTx y lo enviará por el canal exclusivo en lugar de enviarselo a la capa de aplicación.
+    Con mas detalle, primero se establece un umbral de alrededor un 70~80% de la capacidad máxima del buffer, si se alcanza un umbral en el receptor, simplemente generará un mensaje de feedback y lo enviará por el canal exclusivo.
+Si se alcanza el umbral en la queue intermedia, esta generará y enviará un mensaje de feedback por el canal normal de comunicación, nodeRx se enterará que dicho mensaje es para nodeTx y lo enviará por el canal exclusivo en lugar de enviarselo a la capa de aplicación.
 
-Notese que siguiendo la misma idea, este modelo se puede generalizar con una cantidad arbitraria de queues intermedias.
+    Cuando llega el mensaje de feedback a nodeTx, este disminuirá su transmisión de paquetes encolandolos al rededor de un 10% mas tarde de lo que deberían ser encolados, después de T segundos la velocidad de transmisión volverá a lo normal.
+
+    Notese que siguiendo la misma idea, este modelo se puede generalizar con una cantidad arbitraria de queues intermedias.
 
 ## Resultados
 
