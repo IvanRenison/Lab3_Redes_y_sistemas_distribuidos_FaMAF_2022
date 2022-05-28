@@ -14,7 +14,20 @@
 
 ## Índice
 
-## Introducción
+1. [Introducción](#introducción)
+2. [Experimentos](#experimentos)
+3. [Métodos](#métodos)
+4. [Resultados](#resultados)
+5. [Implementación](#implementación)
+
+    5.1. [Parte 1](#parte-1)
+
+    5.2. [Parte 2](#parte-2)
+
+6. [Discusión](#discusión)
+7. [Referencias](#referencias)
+
+## Introducción 
 
     En este trabajo se analizará una red muy simple que consta de un generador y un receptor conectados por un nodo intermedio que tiene un buffer. El esquema de esta red sería así:
 
@@ -137,6 +150,8 @@
 
     Nótese que siguiendo la misma idea, este modelo se puede generalizar con una cantidad arbitraria de queues intermedias.
 
+Para una explicación detallada del código leer la sección [Implementación](#implementación)
+
 ## Resultados
 
     Para poder evaluar los resultados del algoritmo, al ser la misma solución tanto para un problema de congestión y un problema de flujo, se modificaron los siguientes valores para que se pudieran observar ambos problemas en una sola simulación:
@@ -240,3 +255,11 @@
 - Debido a que se corrigieron ambos problemas (congestión y flujo) con la misma solución se baja la transmisión del emisor al enrutador, cuando hay casos, por ejemplo problema de flujo temporal, en los que basta con disminuir la tasa de transferencia del enrutador al receptor y no hace falta cambiar la tasa del emisor al enrutador.
 
 - En los resultados anteriores se puede ver que con un intervalo de generación de 0.1 el delay va aumentando linealmente debido a que los paquetes pasan cada ves mas tiempo en la cola del emisor.
+
+## Referencias
+
+- [OMNeT++ Documentation](https://omnetpp.org/documentation/)
+- Andrew S. Tanenbaum (2013) Redes de computadoras. 5ta edición
+- Juan Fraire (2021) [Redes y Sistemas Distribuidos - Introducción a OMNeT++](https://www.youtube.com/watch?v=6J_0ZKquNWU&t=1766s) 
+
+- [Understanding .msg files in omnet++ and veins](https://stackoverflow.com/questions/65542635/understanding-msg-files-in-omnet-and-veins)
