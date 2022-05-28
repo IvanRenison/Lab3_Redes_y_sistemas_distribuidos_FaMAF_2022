@@ -118,7 +118,7 @@ def main(args: list):
         raise Exception("Argumentos inválidos")
     nombre_simulación: str = args[0]
     correr_simulaciones(nombre_simulación)
-    #exportar_gráficos(nombre_simulación)
+    exportar_gráficos(nombre_simulación)
     gráficos_matplotlib(nombre_simulación)
 
 if __name__ == "__main__":
