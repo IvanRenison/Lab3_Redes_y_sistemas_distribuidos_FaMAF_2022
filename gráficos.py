@@ -86,6 +86,8 @@ def gráficos(json_file: str, nombre_simulación: str):
         json_data = json.load(f)
     datos = obtener_paquetes_enviadosYRecibidos(json_data)
     xs, ys = datos_gráfico_enviados_VS_recibidos(datos)
+    xs = [0] + xs 
+    ys = [0] + ys
     generar_gráfico_enviadosVSrecibidos(xs, ys, nombre_simulación)
     xs, ys = datos_gráfico_aprovechamiento(datos)
     generar_gráfico_GI_VS_aprovechamiento(xs, ys, nombre_simulación)
